@@ -73,15 +73,16 @@ class Gateway(threading.Thread):
         self.gatewayRecvCallback_f = gatewayRecvCallback_f
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
-        print ">>>>>>", self.ip,self.port
         self.socket.connect("tcp://self.ip:%d" % (self.port))
         #self.socket.bind("tcp://%s:%d" % (self.ip,self.port))
     def close(self):
         pass
         # future: close self.context using zmq_ctx_term
     def send(self, msg_str):
+        print "Gateway.send", msg_str
         try:
             self.socket.send(msg_str)
+            print "++++++++++"
         except Exception as e:
             print "Exception in hardwareGatewayNetworkManager.Gateway.send for %s: %s" % (self.hostname,repr(e))
     def run(self):

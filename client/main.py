@@ -28,6 +28,7 @@ def Recv():
     socket.bind("tcp://*:%s" % port)
 
     while True:
+        print "++++++"
         msg = socket.recv()
         print msg
         socket.send("Server message to client3")
