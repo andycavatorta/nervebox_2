@@ -53,6 +53,7 @@ class Manage():
     def add(self,hostname, ip):
         self.gateways[hostname] = Gateway(hostname, ip, self.clientPort, self.recvdMsgCallback)
         self.gateways[hostname].start()
+        self.gateways[hostname].send("asdf")
     def remove(self, hostname):
         self.gateways[hostname].close()
         self.gateways[hostname].join()
@@ -72,7 +73,9 @@ class Gateway(threading.Thread):
         self.gatewayRecvCallback_f = gatewayRecvCallback_f
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
-        self.socket.bind("tcp://%s:%d" % (self.ip,self.port))
+        print ">>>>>>", self.ip,self.port
+        self.socket.connect("tcp://self.ip:%d" % (self.port))
+        #self.socket.bind("tcp://%s:%d" % (self.ip,self.port))
     def close(self):
         pass
         # future: close self.context using zmq_ctx_term
@@ -85,12 +88,11 @@ class Gateway(threading.Thread):
         if self.gatewayRecvCallback_f:
             while True:
                 try:
-                    msg = socket.recv()
+                    msg = self.socket.recv()
                     self.gatewayRecvCallback_f(self.hostname,msg)
                 except Exception as e:
                     # future: delete this instance using Manage.remove
                     print "Exception in hardwareGatewayNetworkManager.Gateway.run for %s: %s" % (self.hostname,repr(e))
-
 
 def main(clientPort, multicast_port, recvdMsgCallback=False):
     manage = Manage(clientPort, recvdMsgCallback)

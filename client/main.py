@@ -3,6 +3,7 @@ import json
 import socket
 import time
 import threading
+import zmq
 
 HOSTNAME = ""
 IP = ""
@@ -20,40 +21,24 @@ def broadcastIpToServer(msg):
         print repr(e)
 
 def Recv():
-    global lastContactTime
-    host = '' 
-    port = 50000 
-    backlog = 10
-    size = 1024 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-    s.bind((host,port)) 
-    s.listen(backlog) 
-    while 1: 
-        client, address = s.accept() 
-        data = client.recv(size) 
-        if data: 
-            global SERVER_IP
-            if SERVER_IP == "":
-                SERVER_IP = address[0]
-            if data == "getSensorData":
-                sd_l = getSensorData()
-                sd_j = json.dumps(sd_l)
-                client.send(sd_j)
-                #print sd
-            if data == "startTurn":
-                startTurn()
-                client.send("")
-            if data == "endTurn":
-                endTurn()
-                client.send("")
-            lastContactTime = time.time()
-        client.close()
+
+    port = "50000"
+    context = zmq.Context()
+    socket = context.socket(zmq.PAIR)
+    socket.bind("tcp://*:%s" % port)
+
+    while True:
+        msg = socket.recv()
+        print msg
+        socket.send("Server message to client3")
+        time.sleep(1)
 
 recv = threading.Thread(target=Recv)
 recv.start()
+
 def ControlLoop():
     while 1:
-        if SERVER_IP == "" or time.time() - lastContactTime > serverTimeout: # if server is missing
+        if SERVER_IP == "": # or time.time() - lastContactTime > serverTimeout: # if server is missing
             msg = "%s|%s" % (HOSTNAME, IP)
             broadcastIpToServer(msg)
         time.sleep(1)
