@@ -21,18 +21,16 @@ def broadcastIpToServer(msg):
         print repr(e)
 
 def Recv():
-
-    port = "50000"
-    context = zmq.Context()
-    socket = context.socket(zmq.PAIR)
-    socket.bind("tcp://*:%s" % port)
+    port = 50000
+    context = zmq.Context.instance()
+    socket = context.socket(zmq.DEALER)
+    socket.setsockopt(zmq.IDENTITY, b'MRQ1')
+    socket.connect("tcp://localhost:%d" % (port))
 
     while True:
         print "++++++"
-        msg = socket.recv()
-        print msg
-        socket.send("Server message to client3")
-        time.sleep(1)
+        request = socket.recv()
+        print repr(request)
 
 recv = threading.Thread(target=Recv)
 recv.start()

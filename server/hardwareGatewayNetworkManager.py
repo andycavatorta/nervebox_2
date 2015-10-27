@@ -42,60 +42,26 @@ class Discover(threading.Thread):
         #except Exception as e:
         #    print "Exception in hardwareGatewayNetworkManager.Discovery: %s" % (repr(e))
 
-"""
-The Manage class creates, destroys, and tracks the network connections from hardware gateways
-"""
-class Manage():
-    def __init__(self,clientPort, recvdMsgCallback):
+class Router(threading.Thread):
+    def __init__(self, clientPort, recvdMsgCallback):
+        threading.Thread.__init__(self)
         self.clientPort = clientPort
         self.recvdMsgCallback = recvdMsgCallback
-        self.gateways = {}
-    def add(self,hostname, ip):
-        self.gateways[hostname] = Gateway(hostname, ip, self.clientPort, self.recvdMsgCallback)
-        self.gateways[hostname].start()
-        self.gateways[hostname].send("asdf")
-    def remove(self, hostname):
-        self.gateways[hostname].close()
-        self.gateways[hostname].join()
-        delete(self.gateways[hostname])
-    def getlist(self, verbose=False):
-        return self.gateways.keys()
-
-"""
-The Gateway class contains the network connections for a Gateway
-"""
-class Gateway(threading.Thread):
-    def __init__(self, hostname, ip, port, gatewayRecvCallback_f):
-        threading.Thread.__init__(self)
-        self.hostname = hostname
-        self.ip = ip
-        self.port = port
-        self.gatewayRecvCallback_f = gatewayRecvCallback_f
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.PAIR)
-        self.socket.connect("tcp://self.ip:%d" % (self.port))
-        #self.socket.bind("tcp://%s:%d" % (self.ip,self.port))
-    def close(self):
-        pass
-        # future: close self.context using zmq_ctx_term
-    def send(self, msg_str):
-        print "Gateway.send", msg_str
-        try:
-            self.socket.send(msg_str)
-            print "++++++++++"
-        except Exception as e:
-            print "Exception in hardwareGatewayNetworkManager.Gateway.send for %s: %s" % (self.hostname,repr(e))
+        self.context = zmq.Context.instance()
+        self.client = self.context.socket(zmq.ROUTER)
+        self.client.bind("tcp://*:%d" % (clientPort))
+    def sendToGateway(self, hostname, msg):
+        self.client.send_multipart([hostname, msg])
     def run(self):
-        if self.gatewayRecvCallback_f:
-            while True:
-                try:
-                    msg = self.socket.recv()
-                    self.gatewayRecvCallback_f(self.hostname,msg)
-                except Exception as e:
-                    # future: delete this instance using Manage.remove
-                    print "Exception in hardwareGatewayNetworkManager.Gateway.run for %s: %s" % (self.hostname,repr(e))
+        while True:
+            hostAndMsg = self.client.recv()
+            print hostAndMsg
 
-def main(clientPort, multicast_port, recvdMsgCallback=False):
-    manage = Manage(clientPort, recvdMsgCallback)
-    discover = Discover(multicast_port, manage.add)
+def main(clientPort, multicast_port, discoveryCallback, recvdMsgCallback=False):
+    router = Router(clientPort, recvdMsgCallback)
+    discover = Discover(multicast_port, discoveryCallback)
     discover.start()
+    time.sleep(1)
+    for i in range(30):
+        router.sendToGateway(b'MRQ1', b'asdf')
+        time.sleep(.1)
