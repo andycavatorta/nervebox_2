@@ -1,6 +1,7 @@
 """
 
 
+
 """
 import json
 import os
@@ -11,18 +12,52 @@ import sys
 
 # constants
 PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
-BASE_PATH = "/home/pi/nervebox_2" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/server/" 
+BASE_PATH = "/home/pi/nervebox_2" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
+SERVER_PATH = "%sserver/" % (BASE_PATH )
+COMMON_PATH = "%scommon/" % (BASE_PATH )
 
-# load config
-with open(BASE_PATH + 'settings.json', 'r') as f:
-    CONFIG = json.load(f)
-
-def tempca(hostname,msg):
-	print "tempcc:", hostname,msg
-
-def tempcb(hostname,msg):
-	print "tempcb:", hostname,msg
+# local paths
+sys.path.append(BASE_PATH)
+sys.path.append(COMMON_PATH)
+sys.path.append(SERVER_PATH)
 
 # import local modules
-import hardwareGatewayNetworkManager
-hardwareGatewayNetworkManager.main(50000, 10000, tempca, tempcb)
+import discovery
+import duplexSockets
+
+# load config
+with open(COMMON_PATH + 'settings.json', 'r') as f:
+    CONFIG = json.load(f)
+
+nport = 50000
+
+def nextPort():
+	global nport
+	nport += 1
+	return nport
+
+def discovery_handleDeviceFound(msg_d):
+    msg_d["server_port"] = nextPort()
+    print "discovery_handleDeviceFound:", msg_d
+    duplexSockets_send = duplexSockets.init(
+        msg_d["ip"], 
+        CONFIG["duplexSockets_devicePort"],
+        msg_d["server_port"], 
+        duplexSockets_handleMessages, 
+        duplexSockets_handleOutgoingConfirmation
+    )
+    return msg_d
+
+discovery.init_responder(
+	CONFIG["discovery_multicastGroup"], 
+	CONFIG["discovery_multicastPort"],
+	CONFIG["discovery_responsePort"],
+	discovery_handleDeviceFound 
+)
+
+def duplexSockets_handleMessages(msg):
+    print "duplexPort_handleMessages", msg
+
+def duplexSockets_handleOutgoingConfirmation(msg):
+    print "duplexPort_handleOutgoingConfirmation", msg
+

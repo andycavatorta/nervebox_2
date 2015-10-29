@@ -7,12 +7,11 @@ Exceptions sending to clients cause connection to be destroyed.
 
 
 """
-import json
+import commands
 import socket
 import struct
 import time
 import threading
-import sys
 import zmq
 
 """
@@ -22,10 +21,13 @@ future:
     test multicast requests for expected format
     report exceptions to central logger
 """
-class Discover(threading.Thread):
-    def __init__(self, multicast_port, callback):
+
+class Discovery(threading.Thread):
+    def __init__(self, multicast_port, response_port, localIP, callback):
         threading.Thread.__init__(self)
         self.multicast_port = multicast_port
+        self.response_port = response_port
+        self.localIP = localIP
         self.callback = callback
         MCAST_GRP = '224.0.0.1' # no need to place this in settings.json
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -33,14 +35,20 @@ class Discover(threading.Thread):
         self.sock.bind((MCAST_GRP, multicast_port))
         self.mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, self.mreq)
+    def response(self, remoteIP):
+        context = zmq.Context()
+        socket = context.socket(zmq.PAIR)
+        socket.connect("tcp://%s:%s" % (remoteIP,self.response_port))
+        socket.send(self.localIP)
     def run(self):
-        #try:
+        try:
             msg = self.sock.recv(1024)
             clienthost, clientip = msg.split("|")
             print "Event: Hardware Gateway Discovered:",clienthost, clientip
-            self.callback(clienthost, clientip)
-        #except Exception as e:
-        #    print "Exception in hardwareGatewayNetworkManager.Discovery: %s" % (repr(e))
+            self.response(clientip)
+            #self.callback(clienthost, clientip)
+        except Exception as e:
+            print "Exception in hardwareGatewayNetworkManager.Discovery: %s" % (repr(e))
 
 class Router(threading.Thread):
     def __init__(self, clientPort, recvdMsgCallback):
@@ -58,9 +66,18 @@ class Router(threading.Thread):
             print hostAndMsg
 
 def main(clientPort, multicast_port, discoveryCallback, recvdMsgCallback=False):
+
+    cmd = "ip addr list eth0 |grep \"inet \" |cut -d' ' -f6|cut -d/ -f1"
+    resp = commands.getstatusoutput(cmd)
+    print resp
+    IP = resp[1]
+    HOSTNAME = socket.gethostname()
+
     router = Router(clientPort, recvdMsgCallback)
-    discover = Discover(multicast_port, discoveryCallback)
-    discover.start()
+
+    discovery = Discovery(multicast_port, 10001, IP, discoveryCallback)
+    discovery.start()
+
     time.sleep(1)
     for i in range(30):
         router.sendToGateway(b'MRQ1', b'asdf')

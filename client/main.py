@@ -1,25 +1,58 @@
-import commands
 import json
-import socket
+import os
+import struct
 import time
 import threading
+import sys
+
 import zmq
 
-HOSTNAME = ""
-IP = ""
-SERVER_IP = ""
+# constants
+PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
+BASE_PATH = "/home/pi/nervebox_2" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
+CLIENT_PATH = "%sclient/" % (BASE_PATH )
+COMMON_PATH = "%scommon/" % (BASE_PATH )
 
-def broadcastIpToServer(msg):
-    try:
-        MCAST_GRP = '224.0.0.1'
-        MCAST_PORT = 10000
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)
-        print "common/main_client.py broadcastIpToServer()", msg
-        sock.sendto(msg, (MCAST_GRP, MCAST_PORT))
-    except Exception as e:
-        print repr(e)
+# local paths
+sys.path.append(BASE_PATH)
+sys.path.append(COMMON_PATH)
+sys.path.append(CLIENT_PATH)
 
+# import local modules
+import discovery
+import duplexSockets
+
+# load config
+with open(COMMON_PATH + 'settings.json', 'r') as f:
+    CONFIG = json.load(f)
+
+# DONE WITH BASIC SET UP
+
+
+def duplexSockets_handleMessages(msg):
+    print "duplexPort_handleMessages", msg
+
+def duplexSockets_handleOutgoingConfirmation(msg):
+    print "duplexPort_handleOutgoingConfirmation", msg
+
+def discovery_handleServerFound(msg_d):
+    print "discovery_handleServerFound", msg_d
+    duplexSockets_send = duplexSockets.init(
+        msg_d["ip"], 
+        msg_d["server_port"], 
+        CONFIG["duplexSockets_devicePort"],
+        duplexSockets_handleMessages, 
+        duplexSockets_handleOutgoingConfirmation
+    )
+
+discovery.init_caller(
+    CONFIG["discovery_multicastGroup"], 
+    CONFIG["discovery_multicastPort"],
+    CONFIG["discovery_responsePort"],
+    discovery_handleServerFound
+)
+
+"""
 def Recv():
     port = 50000
     context = zmq.Context.instance()
@@ -35,12 +68,8 @@ def Recv():
 recv = threading.Thread(target=Recv)
 recv.start()
 
-def ControlLoop():
-    while 1:
-        if SERVER_IP == "": # or time.time() - lastContactTime > serverTimeout: # if server is missing
-            msg = "%s|%s" % (HOSTNAME, IP)
-            broadcastIpToServer(msg)
-        time.sleep(1)
+def cb(msg):
+    print "IP received from discovered server", msg
 
 def main():
     global HOSTNAME
@@ -52,7 +81,12 @@ def main():
     IP = resp[1]
     HOSTNAME = socket.gethostname()
 
-    controlloop = threading.Thread(target=ControlLoop)
-    controlloop.start()
+    receiveIpFromServer = threading.Thread(target=ReceiveIpFromServer)
+    receiveIpFromServer.start()
+
+    broadcastIpToServer = threading.Thread(target=BroadcastIpToServer)
+    broadcastIpToServer.start()
 
 main()
+
+"""
