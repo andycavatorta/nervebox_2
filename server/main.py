@@ -24,18 +24,20 @@ sys.path.append(SERVER_PATH)
 # import local modules
 import discovery
 import duplexSockets
+import nerveOSC
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:
     CONFIG = json.load(f)
 
+# to do: replace with python iterator
 nport = 50000
-
 def nextPort():
 	global nport
 	nport += 1
 	return nport
-
+    
+# SET UP NETWORKING
 def discovery_handleDeviceFound(msg_d):
     msg_d["server_port"] = nextPort()
     print "discovery_handleDeviceFound:", msg_d
