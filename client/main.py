@@ -13,7 +13,7 @@ import sys
 
 # constants
 PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
-BASE_PATH = "/home/pi/nervebox_2" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
+BASE_PATH = "/home/pi/nervebox_2/" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
 CLIENT_PATH = "%sclient/" % (BASE_PATH )
 DEVICES_PATH = "%sclient/devices/" % (BASE_PATH )
 COMMON_PATH = "%scommon/" % (BASE_PATH )
