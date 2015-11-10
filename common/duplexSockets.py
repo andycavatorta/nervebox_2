@@ -17,7 +17,7 @@ class IncomingSocket(threading.Thread):
         self.socket.bind("tcp://*:%s" % local_port)
     def run(self):
         while True:
-            msg = self.socket.recv()
+            message = self.socket.recv()
             print "message=", message
             resp = self.callback(message)
             if resp == None:

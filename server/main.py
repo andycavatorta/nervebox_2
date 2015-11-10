@@ -4,6 +4,7 @@
 
 """
 import json
+import mapMIDIToNerveOSC
 import os
 import struct
 import time
@@ -15,6 +16,7 @@ PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
 BASE_PATH = "/home/pi/nervebox_2" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
 SERVER_PATH = "%sserver/" % (BASE_PATH )
 COMMON_PATH = "%scommon/" % (BASE_PATH )
+STORE_PATH = "%sstore/" % SERVER_PATH
 
 # local paths
 sys.path.append(BASE_PATH)
@@ -25,41 +27,97 @@ sys.path.append(SERVER_PATH)
 import discovery
 import duplexSockets
 import nerveOSC
+import midiDeviceManager
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:
     CONFIG = json.load(f)
 
-# to do: replace with python iterator
+# SET UP NETWORKING
+"""
+hosts = {}
+
 nport = 50000
 def nextPort():
-	global nport
-	nport += 1
-	return nport
-    
-# SET UP NETWORKING
+    global nport
+    nport += 1
+    return nport
+"""
+
+class Hosts():
+    def __init__(self):
+        self.hosts = {}
+        self.nextPort = 50000
+    def addHost(self, msg_d):
+        msg_d["server_port"] = self.nextPort
+        self.nextPort += 1
+        print "addHost", msg_d
+        self.hosts[msg_d["hostname"]] = host = Host(msg_d["hostname"])
+        send = duplexSockets.init(
+            msg_d["ip"], 
+            CONFIG["duplexSockets_devicePort"],
+            msg_d["server_port"], 
+            host.handleIncoming, 
+            host.handleOutgoingResponse
+        )
+        host.setSend(send)
+        return msg_d
+    def removeHost(self, hostname):
+        return
+
+hosts = Hosts()
+
+class Host():
+    def __init__(self, hostname):
+        self.hostname = hostname
+        #self.ip = ip
+        #self.port = port
+    def send(self, msg):
+        print "outgoing port not set up", msg
+    def handleIncoming(self, msg):
+        print "handleIncoming",self.hostname, msg
+    def handleOutgoingResponse(self, msg):
+        print "handleOutgoingResponse",self.hostname, msg
+    def setSend(self, func):
+        self.send = func
+"""
 def discovery_handleDeviceFound(msg_d):
     msg_d["server_port"] = nextPort()
+    hostname = msg_d["hostname"]
+    host = Host(hostname)
+    hosts[hostname] = host
     print "discovery_handleDeviceFound:", msg_d
-    duplexSockets_send = duplexSockets.init(
+    send = duplexSockets.init(
         msg_d["ip"], 
         CONFIG["duplexSockets_devicePort"],
         msg_d["server_port"], 
-        duplexSockets_handleMessages, 
-        duplexSockets_handleOutgoingConfirmation
+        host.handleIncoming, 
+        host.handleOutgoingResponse
     )
+    host.setSend(send)
+    print hosts
     return msg_d
+"""
 
 discovery.init_responder(
 	CONFIG["discovery_multicastGroup"], 
 	CONFIG["discovery_multicastPort"],
 	CONFIG["discovery_responsePort"],
-	discovery_handleDeviceFound 
+	hosts.addHost # discovery_handleDeviceFound 
 )
 
-def duplexSockets_handleMessages(msg):
-    print "duplexPort_handleMessages", msg
+# SET UP Mapping to NerveOSC
+def nerveOSCRouter(msg):
+    hosts.hosts["MRQ1"].send(">>>>")
+    #print "foo", msg
 
-def duplexSockets_handleOutgoingConfirmation(msg):
-    print "duplexPort_handleOutgoingConfirmation", msg
+mapMIDIToNerveOSC.init("test1", nerveOSCRouter, STORE_PATH)
 
+# SET UP MIDI
+def deviceCallback(eventType, deviceID, deviceName):
+    print "deviceCallback", eventType, deviceID, deviceName
+
+def midiCallback(deviceName, cmd, channel, note, velocity):
+    print "midiCallback", deviceName, cmd, channel, note, velocity
+
+midiDeviceManager.init(deviceCallback, mapMIDIToNerveOSC.midiIn)
