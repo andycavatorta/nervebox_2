@@ -136,7 +136,7 @@ class Device(threading.Thread):
         lastTime = time.time()
         bytesFromDev_l = []
         while True:
-            try:
+            #try:
                 midi_chr = self.device.read(1)
                 thisTime = time.time()
                 if thisTime - lastTime <= 0.01:
@@ -159,9 +159,9 @@ class Device(threading.Thread):
                 else:
                     bytesFromDev_l = [midi_chr]
                 lastTime = thisTime
-            except Exception as e:
-                print "exception in Device %s", self.deviceId
-                break
+            #except Exception as e:
+            #    print "exception in Device %s", self.deviceId
+            #    break
 
 def init(dcb, mcb):
     deviceTracker = DeviceTracker(dcb, mcb)

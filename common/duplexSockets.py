@@ -20,9 +20,9 @@ class IncomingSocket(threading.Thread):
             message = self.socket.recv()
             print "message=", message
             resp = self.callback(message)
-            if resp == None:
-                resp = ""
-            self.socket.send(resp)
+            #if resp == None:
+            #    resp = ""
+            #self.socket.send(resp)
 
 class OutgoingSocket():
     def __init__(self, remote_ip, remote_port, callback):
@@ -41,10 +41,10 @@ class OutgoingSocket():
     def send(self, msg):
         while True:
             self.socket.send(msg)
-            msg = self.socket.recv(msg)
-            print "message=", msg
-            if self.callback:
-                self.callback(msg)
+            #msg = self.socket.recv()
+            #print "message=", msg
+            #if self.callback:
+            #    self.callback(msg)
 
 def init(remote_ip, remote_port, local_port, incoming_callback, outgoing_callback=None):
     print "duplexSockets.init",remote_ip, remote_port, local_port

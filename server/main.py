@@ -34,15 +34,6 @@ with open(COMMON_PATH + 'settings.json', 'r') as f:
     CONFIG = json.load(f)
 
 # SET UP NETWORKING
-"""
-hosts = {}
-
-nport = 50000
-def nextPort():
-    global nport
-    nport += 1
-    return nport
-"""
 
 class Hosts():
     def __init__(self):
@@ -80,24 +71,6 @@ class Host():
         print "handleOutgoingResponse",self.hostname, msg
     def setSend(self, func):
         self.send = func
-"""
-def discovery_handleDeviceFound(msg_d):
-    msg_d["server_port"] = nextPort()
-    hostname = msg_d["hostname"]
-    host = Host(hostname)
-    hosts[hostname] = host
-    print "discovery_handleDeviceFound:", msg_d
-    send = duplexSockets.init(
-        msg_d["ip"], 
-        CONFIG["duplexSockets_devicePort"],
-        msg_d["server_port"], 
-        host.handleIncoming, 
-        host.handleOutgoingResponse
-    )
-    host.setSend(send)
-    print hosts
-    return msg_d
-"""
 
 discovery.init_responder(
 	CONFIG["discovery_multicastGroup"], 
