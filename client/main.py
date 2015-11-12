@@ -37,11 +37,12 @@ import device
 with open(COMMON_PATH + 'settings.json', 'r') as f:
     CONFIG = json.load(f)
 
+device.init()
+
 # SET UP NETWORKING
 def duplexSockets_handleMessages(msg):
     print "duplexPort_handleMessages", msg
-    nosc_d = nerveOSC.parse(msg)
-    print "nosc_d=", nosc_d
+    device.handleNOSC(nerveOSC.parse(msg))
 
 def duplexSockets_handleOutgoingConfirmation(msg):
     print "duplexPort_handleOutgoingConfirmation", msg

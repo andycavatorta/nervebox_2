@@ -29,8 +29,9 @@ def parse(nerveOSC_str):
 			env = token
 	path_l = path.split("/")
 	value  = path_l[-1:][0]
-	for i in range(len(path_l)-3):
-		innerpath += "/%s" % path_l[i+2]
+	# replace w/ join or other string function
+	innerpath = "/"+"/".join(path_l[1:-1])
+	path = "/"+"/".join(path_l[1:])
 	return {
 		"host":path_l[1],
 		"path":path,
