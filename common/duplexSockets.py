@@ -52,7 +52,7 @@ class OutgoingSocket(threading.Thread):
 
     def run(self):
         while True:            
-            time.sleep(1)
+            time.sleep(5)
             self.send(self.ping_msg)
             #message = self.socket.recv()
             #resp = self.callback(message)
@@ -65,5 +65,5 @@ def init(remote_ip, remote_port, local_port, ping_msg, incoming_callback, outgoi
     incomingSocket = IncomingSocket(local_port, incoming_callback, exception_callback)
     incomingSocket.start()
     outgoingSocket = OutgoingSocket(remote_ip, remote_port, ping_msg, outgoing_callback, exception_callback)
-    outgoingSocket.start()
+    #outgoingSocket.start()
     return outgoingSocket.send
