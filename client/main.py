@@ -19,18 +19,19 @@ BASE_PATH = "/home/pi/nervebox_2/" if PI_NATIVE else "/home/stella/Dropbox/proje
 CLIENT_PATH = "%sclient/" % (BASE_PATH )
 DEVICES_PATH = "%sclient/devices/" % (BASE_PATH )
 COMMON_PATH = "%scommon/" % (BASE_PATH )
-SPECIFIC_CLIENT_PATH = "%sclient/devices/%s/" % (BASE_PATH, HOSTNAME)
+HOST_SPECIFIC_PATH = "%sclient/devices/%s/" % (BASE_PATH, HOSTNAME)
 
 # local paths
 sys.path.append(BASE_PATH)
 sys.path.append(COMMON_PATH)
 sys.path.append(CLIENT_PATH)
-sys.path.append(SPECIFIC_CLIENT_PATH)
+sys.path.append(HOST_SPECIFIC_PATH)
 
 # import local modules
 import discovery
 import duplexSockets
 import nerveOSC
+import device
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:

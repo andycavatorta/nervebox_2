@@ -28,7 +28,6 @@ import discovery
 import duplexSockets
 import nerveOSC
 import midiDeviceManager
-import device
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:
