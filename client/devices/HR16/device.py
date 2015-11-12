@@ -128,7 +128,7 @@ def system_miditest_start(value):
             msg_midi.note = pitch
             print msg_midi
             midi_out.send(msg_midi)
-            time.sleep(1)
+            time.sleep(.1)
 
 def system_miditest_stop(value):
     midi_out.panic()
