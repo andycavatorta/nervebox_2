@@ -9,104 +9,117 @@ midi_out = mido.open_output(oNames[1])
 # creating OSC endpoint methds
 
 def sound_tom_1_bang(value):
+    midi_out.send(mido.Message('note_on', note=48))
     pass
 def sound_tom_1_off(value):
     pass
 def sound_tom_1_pitch(value):
     pass
 def sound_tom_2_bang(value):
+    midi_out.send(mido.Message('note_on', note=45))
     pass
 def sound_tom_2_off(value):
     pass
 def sound_tom_2_pitch(value):
     pass
 def sound_tom_3_bang(value):
+    midi_out.send(mido.Message('note_on', note=41))
     pass
 def sound_tom_3_off(value):
     pass
 def sound_tom_3_pitch(value):
     pass
 def sound_tom_4_bang(value):
+    midi_out.send(mido.Message('note_on', note=63))
     pass
 def sound_tom_4_off(value):
     pass
 def sound_tom_4_pitch(value):
     pass
 def sound_ride_bang(value):
+    midi_out.send(mido.Message('note_on', note=51))
     pass
 def sound_ride_off(value):
     pass
 def sound_ride_pitch(value):
     pass
 def sound_crash_bang(value):
+    midi_out.send(mido.Message('note_on', note=49))
     pass
 def sound_crash_off(value):
     pass
 def sound_crash_pitch(value):
     pass
 def sound_perc_1_bang(value):
+    midi_out.send(mido.Message('note_on', note=65))
     pass
 def sound_perc_1_off(value):
     pass
 def sound_perc_1_pitch(value):
     pass
 def sound_perc_2_bang(value):
+    midi_out.send(mido.Message('note_on', note=62))
     pass
 def sound_perc_2_off(value):
     pass
 def sound_perc_2_pitch(value):
     pass
 def sound_kick_bang(value):
+    midi_out.send(mido.Message('note_on', note=35))
     pass
 def sound_kick_off(value):
     pass
 def sound_kick_pitch(value):
     pass
 def sound_snare_bang(value):
+    midi_out.send(mido.Message('note_on', note=38))
     pass
 def sound_snare_off(value):
     pass
 def sound_snare_pitch(value):
     pass
 def sound_closed_hat_bang(value):
+    midi_out.send(mido.Message('note_on', note=42))
     pass
 def sound_closed_hat_off(value):
     pass
 def sound_closed_hat_pitch(value):
     pass
 def sound_mid_hat_bang(value):
+    midi_out.send(mido.Message('note_on', note=44))
     pass
 def sound_mid_hat_off(value):
     pass
 def sound_mid_hat_pitch(value):
     pass
 def sound_open_hat_bang(value):
+    midi_out.send(mido.Message('note_on', note=46))
     pass
 def sound_open_hat_off(value):
     pass
 def sound_open_hat_pitch(value):
     pass
 def sound_claps_bang(value):
+    midi_out.send(mido.Message('note_on', note=39))
     pass
 def sound_claps_off(value):
     pass
 def sound_claps_pitch(value):
     pass
 def sound_perc_3_bang(value):
+    midi_out.send(mido.Message('note_on', note=67))
     pass
 def sound_perc_3_off(value):
     pass
 def sound_perc_3_pitch(value):
     pass
 def sound_perc_4_bang(value):
+    midi_out.send(mido.Message('note_on', note=68))
     pass
 def sound_perc_4_off(value):
     pass
 def sound_perc_4_pitch(value):
     pass
-
-
-
 def system_power_on(value):
     pass
 def system_power_off(value):
