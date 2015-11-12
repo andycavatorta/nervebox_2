@@ -203,9 +203,6 @@ test1 = {
                 "61":"TR505/sound/rim_shot/bang/",
                 "62":"TR505/sound/closed_hi-hat/bang/",
                 "63":"TR505/sound/open_hi-hat/bang/",
-                "80":"TR505/system/miditest/start",
-                "81":"TR505/system/miditest/stop",
-                "82":"TR505/system/midipanic",
             },
             "8":{#note off
                 "48":"TR505/sound/low_conga/off/",
@@ -242,6 +239,9 @@ test1 = {
                 "57":"/TR505/sound/snare_drum/pitch/@pitch",
                 "58":"/TR505/sound/snare_drum/pitch/@pitch",
                 "59":"/TR505/sound/snare_drum/pitch/@pitch",
+                "80":"/TR505/system/miditest/start",
+                "81":"/TR505/system/miditest/stop",
+                "82":"/TR505/system/midipanic",
             },
             "8":{#note off
                 "48":"/TR505/sound/snare_drum/off/",

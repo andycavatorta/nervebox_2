@@ -1,6 +1,9 @@
+import mido
+import time
 
-print "device imported"
+oNames = mido.get_output_names()
 
+midi_out = mido.open_output(oNames[1])
 
 
 # creating OSC endpoint methds
@@ -146,8 +149,18 @@ def system_clock_3(value):
 def system_clock_4(value):
     pass
 def system_miditest_start(value):
-    pass
+    print "system_miditest_start", value
+    for channel in range(16):
+        for pitch in range(127):
+            msg_midi = mido.Message('note_on')
+            msg_midi.channel = channel
+            msg_midi.note = pitch
+            print msg_midi
+            midi_out(msg_midi)
+            time.sleep(0.1)
+
 def system_miditest_stop(value):
+    midi_out.panic()
     pass
 def system_midipanic(value):
     pass
@@ -231,6 +244,7 @@ def handleNOSC(nosc_d):
         "/system/miditest/stop/":system_miditest_stop,
         "/system/midipanic/":system_midipanic,
     }
+    pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
 
 def init():
     pass
