@@ -12,9 +12,10 @@ implementing only path and value for now
 """
 import socket
 
-def decode(nerveOSC_str):
+def parse(nerveOSC_str):
 	nerveOSC_l = nerveOSC_str.split(" ")
 	path = None
+	host = None
 	innerpath = ""
 	value = None
 	time = None
@@ -31,6 +32,7 @@ def decode(nerveOSC_str):
 	for i in range(len(path_l)-3):
 		innerpath += "/%s" % path_l[i+2]
 	return {
+		"host":path_l[1],
 		"path":path,
 		"innerpath":innerpath,
 		"value":value,
@@ -38,5 +40,5 @@ def decode(nerveOSC_str):
 		"env":env
 	}
 
-def encode(innerpath, value):
+def assemble(innerpath, value):
 	return "/%s%s/%s" % (socket.gethostname(),innerpath,str(value))

@@ -66,12 +66,12 @@ class Mappings():
     def setOutput(self, callback):
         self.callback = callback
     def input(self, deviceName, cmd, channel, note, velocity):
-        #try:
+        try:
             nosc = self.mapping[deviceName][str(channel)][str(cmd)][str(note)]
-            nosc.replace("@pitch", str(note)).replace("@velocity", str(velocity))
+            nosc = nosc.replace("@pitch", str(note)).replace("@velocity", str(velocity))
             self.callback(nosc)
-        #except Exception, e:
-        #    print "exception in mapMIDIToNerveOSC.Mappings.input:", deviceName, cmd, channel, note, velocity, e
+        except Exception, e:
+            print "exception in mapMIDIToNerveOSC.Mappings.input:", deviceName, cmd, channel, note, velocity, e
 
 inputs = {
     "Alesis_Q25":None,
@@ -168,6 +168,11 @@ outputs = {
             "/system/clock/2/":None,
             "/system/clock/3/":None,
             "/system/clock/4/":None,
+
+            "/system/miditest/start":None,
+            "/system/miditest/stop":None,
+            "/system/midipanic":None,
+
         },
     },
     "Tempest":{
@@ -198,6 +203,9 @@ test1 = {
                 "61":"TR505/sound/rim_shot/bang",
                 "62":"TR505/sound/closed_hi-hat/bang",
                 "63":"TR505/sound/open_hi-hat/bang",
+                "80":"TR505/system/miditest/start",
+                "81":"TR505/system/miditest/stop",
+                "82":"TR505/system/midipanic",
             },
             "8":{#note off
                 "48":"TR505/sound/low_conga/off",
@@ -254,7 +262,6 @@ test1 = {
 }
 
 def init(mappingName,nOSCcallback,dbPath):
-    #store.init(dbPath)
     global mappings
     mappings = Mappings(nOSCcallback)
     mappings.open(test1)

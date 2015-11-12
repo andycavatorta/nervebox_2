@@ -104,7 +104,7 @@ class DeviceTracker(threading.Thread):
                                 timesxNames.append((self.compareTimestamps(timestamp2,timestamp1), tokens[8]))
                         timesxNames = sorted(timesxNames, key=itemgetter(0))
                         if timesxNames[0][0] < 1:
-                            self.addDevice(filename,timesxNames[0][1])
+                            self.addDevice(filename,timesxNames[0][1][4:-3])
                     if type_names[0] == 'IN_DELETE':
                         self.removeDevice(filename)
         finally:

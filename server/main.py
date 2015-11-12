@@ -28,6 +28,7 @@ import discovery
 import duplexSockets
 import nerveOSC
 import midiDeviceManager
+import device
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:
@@ -39,6 +40,7 @@ class Hosts():
     def __init__(self):
         self.hosts = {}
         self.nextPort = 50000
+        #self.hostnameXDevname_d
     def addHost(self, msg_d):
         msg_d["server_port"] = self.nextPort
         self.nextPort += 1
@@ -54,7 +56,13 @@ class Hosts():
         host.setSend(send)
         return msg_d
     def removeHost(self, hostname):
-        return
+        return 
+    def routeMessageToHost(self,hostname,msg):
+        print self.hosts
+        if self.hosts.has_key(hostname):
+            self.hosts[hostname].send(msg)
+        else:
+            print "main.Hosts.routeMessageToHost: host not connected:", hostname, msg
 
 hosts = Hosts()
 
@@ -80,9 +88,9 @@ discovery.init_responder(
 )
 
 # SET UP Mapping to NerveOSC
-def nerveOSCRouter(msg):
-    hosts.hosts["MRQ1"].send(">>>>")
-    #print "foo", msg
+def nerveOSCRouter(nosc):
+    nosc_d = nerveOSC.parse(nosc)
+    hosts.routeMessageToHost(nosc_d["host"],nosc_d["path"])
 
 mapMIDIToNerveOSC.init("test1", nerveOSCRouter, STORE_PATH)
 
