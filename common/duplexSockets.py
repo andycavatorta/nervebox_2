@@ -49,16 +49,16 @@ class OutgoingSocket(threading.Thread):
         except Exception as e:
             print "exception in duplexSockets.OutgoingSocket.send", e
             self.exception_callback(e)
-            
+
     def run(self):
         while True:            
             time.sleep(1)
             self.send(self.ping_msg)
-            message = self.socket.recv()
-            resp = self.callback(message)
-            if resp == None:
-                resp = ""
-            self.socket.send(resp)
+            #message = self.socket.recv()
+            #resp = self.callback(message)
+            #if resp == None:
+            #    resp = ""
+            #self.socket.send(resp)
 
 def init(remote_ip, remote_port, local_port, ping_msg, incoming_callback, outgoing_callback, exception_callback):
     print "duplexSockets.init",remote_ip, remote_port, local_port
