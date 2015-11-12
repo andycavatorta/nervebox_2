@@ -21,6 +21,7 @@ DEVICES_PATH = "%sclient/devices/" % (BASE_PATH )
 COMMON_PATH = "%scommon/" % (BASE_PATH )
 HOST_SPECIFIC_PATH = "%sclient/devices/%s/" % (BASE_PATH, HOSTNAME)
 
+
 # local paths
 sys.path.append(BASE_PATH)
 sys.path.append(COMMON_PATH)
