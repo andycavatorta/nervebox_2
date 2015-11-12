@@ -30,7 +30,7 @@ def parse(nerveOSC_str):
 	path_l = path.split("/")
 	value  = path_l[-1:][0]
 	# replace w/ join or other string function
-	innerpath = "/"+"/".join(path_l[1:-1])
+	innerpath = "/"+"/".join(path_l[2:-1])
 	path = "/"+"/".join(path_l[1:])
 	return {
 		"host":path_l[1],
