@@ -166,6 +166,8 @@ def system_miditest_stop(value):
 def system_midipanic(value):
     pass
 
+def ping(value):
+    pass
 
 def handleNOSC(nosc_d):
     print nosc_d
@@ -245,6 +247,8 @@ def handleNOSC(nosc_d):
         "/system/midipanic":system_midipanic,
         "/system/ping":ping,
         "/system/ping/":ping,
+        "/ping":ping,
+        "/ping/":ping,
     }
     try:
         pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])

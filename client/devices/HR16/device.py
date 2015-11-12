@@ -215,6 +215,8 @@ def handleNOSC(nosc_d):
         "/system/midipanic":system_midipanic,
         "/system/ping":ping,
         "/system/ping/":ping,
+        "/ping":ping,
+        "/ping/":ping,
     }
     #print 'nosc_d["innerpath"]', nosc_d["innerpath"]
     try:

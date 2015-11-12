@@ -42,7 +42,7 @@ class OutgoingSocket(threading.Thread):
 
     def send(self, msg):
         #try:
-            self.socket.send(msg)
+            self.socket.send_string(msg)
             msg = self.socket.recv()
             if self.callback:
                 self.callback(msg)
