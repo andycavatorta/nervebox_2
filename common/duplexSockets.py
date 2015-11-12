@@ -41,14 +41,14 @@ class OutgoingSocket(threading.Thread):
         self.socket.connect("tcp://%s:%s" % (self.remote_ip, self.remote_port))
 
     def send(self, msg):
-        try:
+        #try:
             self.socket.send(msg)
             msg = self.socket.recv()
             if self.callback:
                 self.callback(msg)
-        except Exception as e:
-            print "exception in duplexSockets.OutgoingSocket.send", e
-            self.exception_callback(e)
+        #except Exception as e:
+        #    print "exception in duplexSockets.OutgoingSocket.send", e
+        #    self.exception_callback(e)
 
     def run(self):
         while True:            

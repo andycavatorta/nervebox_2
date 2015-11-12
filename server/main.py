@@ -49,11 +49,10 @@ class Hosts():
             msg_d["ip"], 
             CONFIG["duplexSockets_devicePort"],
             msg_d["server_port"], 
-            "/system/ping/",
+            "/%s/system/ping/" % msg_d["hostname"],
             host.handleIncoming, 
             host.handleOutgoingResponse,
             host.handleException
-
         )
         host.setSend(send)
         return msg_d
