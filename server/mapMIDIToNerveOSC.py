@@ -180,82 +180,66 @@ outputs = {
     },
     "HR16":{
         "paths":{
-            "/sound/tom_1/accent/":None,
             "/sound/tom_1/bang/":None,
             "/sound/tom_1/off/":None,
             "/sound/tom_1/pitch/@":None,
 
-            "/sound/tom_2/accent/":None,
             "/sound/tom_2/bang/":None,
             "/sound/tom_2/off/":None,
             "/sound/tom_2/pitch/@":None,
 
-            "/sound/tom_3/accent/":None,
             "/sound/tom_3/bang/":None,
             "/sound/tom_3/off/":None,
             "/sound/tom_3/pitch/@":None,
 
-            "/sound/tom_4/accent/":None,
             "/sound/tom_4/bang/":None,
             "/sound/tom_4/off/":None,
             "/sound/tom_4/pitch/@":None,
 
-            "/sound/ride/accent/":None,
             "/sound/ride/bang/":None,
             "/sound/ride/off/":None,
             "/sound/ride/pitch/@":None,
 
-            "/sound/crash/accent/":None,
             "/sound/crash/bang/":None,
             "/sound/crash/off/":None,
             "/sound/crash/pitch/@":None,
 
-            "/sound/perc_1/accent/":None,
             "/sound/perc_1/bang/":None,
             "/sound/perc_1/off/":None,
             "/sound/perc_1/pitch/@":None,
 
-            "/sound/perc_2/accent/":None,
             "/sound/perc_2/bang/":None,
             "/sound/perc_2/off/":None,
             "/sound/perc_2/pitch/@":None,
 
-            "/sound/kick/accent/":None,
             "/sound/kick/bang/":None,
             "/sound/kick/off/":None,
             "/sound/kick/pitch/@":None,
 
-            "/sound/snare/accent/":None,
             "/sound/snare/bang/":None,
             "/sound/snare/off/":None,
             "/sound/snare/pitch/@":None,
 
-            "/sound/closed_hat/accent/":None,
             "/sound/closed_hat/bang/":None,
             "/sound/closed_hat/off/":None,
             "/sound/closed_hat/pitch/@":None,
 
-            "/sound/mid_hat/accent/":None,
             "/sound/mid_hat/bang/":None,
             "/sound/mid_hat/off/":None,
             "/sound/mid_hat/pitch/@":None,
 
-            "/sound/open_hat/accent/":None,
             "/sound/open_hat/bang/":None,
             "/sound/open_hat/off/":None,
             "/sound/open_hat/pitch/@":None,
 
-            "/sound/claps/accent/":None,
             "/sound/claps/bang/":None,
             "/sound/claps/off/":None,
             "/sound/claps/pitch/@":None,
 
-            "/sound/perc_3/accent/":None,
             "/sound/perc_3/bang/":None,
             "/sound/perc_3/off/":None,
             "/sound/perc_3/pitch/@":None,
 
-            "/sound/perc_4/accent/":None,
             "/sound/perc_4/bang/":None,
             "/sound/perc_4/off/":None,
             "/sound/perc_4/pitch/@":None,

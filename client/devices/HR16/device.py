@@ -149,6 +149,8 @@ def system_miditest_stop(value):
 def system_midipanic(value):
     pass
 
+def ping(value):
+    pass
 
 def handleNOSC(nosc_d):
     print nosc_d
@@ -211,9 +213,15 @@ def handleNOSC(nosc_d):
         "/system/clock/4":system_clock_4,
         "/system/miditest":system_miditest_start,
         "/system/midipanic":system_midipanic,
+        "/system/ping":ping,
+        "/system/ping/":ping,
     }
-    print 'nosc_d["innerpath"]', nosc_d["innerpath"]
-    pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
+    #print 'nosc_d["innerpath"]', nosc_d["innerpath"]
+    try:
+        pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
+    except Exception as e:
+        print "device: path not found", e
+    #pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
 
 def init():
     pass

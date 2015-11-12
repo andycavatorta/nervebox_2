@@ -49,8 +49,11 @@ class Hosts():
             msg_d["ip"], 
             CONFIG["duplexSockets_devicePort"],
             msg_d["server_port"], 
+            "/system/ping/",
             host.handleIncoming, 
-            host.handleOutgoingResponse
+            host.handleOutgoingResponse,
+            host.handleException
+
         )
         host.setSend(send)
         return msg_d
@@ -68,14 +71,15 @@ hosts = Hosts()
 class Host():
     def __init__(self, hostname):
         self.hostname = hostname
-        #self.ip = ip
-        #self.port = port
     def send(self, msg):
         print "outgoing port not set up", msg
     def handleIncoming(self, msg):
         print "handleIncoming",self.hostname, msg
     def handleOutgoingResponse(self, msg):
         print "handleOutgoingResponse",self.hostname, msg
+    def handleException(self, msg):
+        print "handleException",self.hostname, msg
+
     def setSend(self, func):
         self.send = func
 

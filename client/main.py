@@ -48,14 +48,19 @@ def duplexSockets_handleMessages(msg):
 def duplexSockets_handleOutgoingConfirmation(msg):
     print "duplexPort_handleOutgoingConfirmation", msg
 
+def duplexSockets_handleException(msg):
+    print "duplexSockets_handleException", msg
+
 def discovery_handleServerFound(msg_d):
     print "discovery_handleServerFound", msg_d
     duplexSockets_send = duplexSockets.init(
         msg_d["ip"], 
         msg_d["server_port"], 
         CONFIG["duplexSockets_devicePort"],
+        "/system/ping/",
         duplexSockets_handleMessages, 
-        duplexSockets_handleOutgoingConfirmation
+        duplexSockets_handleOutgoingConfirmation,
+        duplexSockets_handleException
     )
 
 discovery.init_caller(

@@ -243,8 +243,13 @@ def handleNOSC(nosc_d):
         "/system/clock/4/":system_clock_4,
         "/system/miditest":system_miditest_start,
         "/system/midipanic":system_midipanic,
+        "/system/ping":ping,
+        "/system/ping/":ping,
     }
-    pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
+    try:
+        pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
+    except Exception as e:
+        print "device: path not found", e
 
 def init():
     pass
