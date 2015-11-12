@@ -122,7 +122,7 @@ def system_clock_4(value):
 def system_miditest_start(value):
     print "system_miditest_start", value
     for channel in range(16):
-        for pitch in range(127):
+        for pitch in range(30, 70):
             msg_midi = mido.Message('note_on')
             msg_midi.channel = 0
             msg_midi.note = pitch
