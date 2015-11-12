@@ -196,10 +196,10 @@ def handleNOSC(nosc_d):
         "/system/clock/2":system_clock_2,
         "/system/clock/3":system_clock_3,
         "/system/clock/4":system_clock_4,
-        "/system/miditest/start":system_miditest_start,
-        "/system/miditest/stop":system_miditest_stop,
+        "/system/miditest":system_miditest_start,
         "/system/midipanic":system_midipanic,
     }
+    print 'nosc_d["innerpath"]', nosc_d["innerpath"]
     pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
 
 def init():
