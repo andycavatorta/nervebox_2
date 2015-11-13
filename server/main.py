@@ -59,7 +59,7 @@ class Hosts():
     def removeHost(self, hostname):
         return 
     def routeMessageToHost(self,hostname,msg):
-        print self.hosts
+        #print self.hosts
         if self.hosts.has_key(hostname):
             self.hosts[hostname].send(msg)
         else:
@@ -75,7 +75,8 @@ class Host():
     def handleIncoming(self, msg):
         print "handleIncoming",self.hostname, msg
     def handleOutgoingResponse(self, msg):
-        print "handleOutgoingResponse",self.hostname, msg
+        pass
+        #print "handleOutgoingResponse",self.hostname, msg
     def handleException(self, msg):
         print "handleException",self.hostname, msg
 
@@ -92,7 +93,7 @@ discovery.init_responder(
 # SET UP Mapping to NerveOSC
 def nerveOSCRouter(nosc):
     nosc_d = nerveOSC.parse(nosc)
-    print nosc, nosc_d
+    print nosc #, nosc_d
     hosts.routeMessageToHost(nosc_d["host"],nosc_d["path"])
 
 mapMIDIToNerveOSC.init("test1", nerveOSCRouter, STORE_PATH)
