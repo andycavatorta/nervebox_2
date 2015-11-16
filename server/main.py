@@ -93,7 +93,7 @@ discovery.init_responder(
 def nerveOSCRouter(nosc):
     nosc_d = nerveOSC.parse(nosc)
     print nosc #, nosc_d
-    hosts.routeMessageToHost(nosc_d["host"],nosc_d["path"])
+    hosts.routeMessageToHost(nosc_d["host"],nosc)
 
 mapMIDIToNerveOSC.init("test1", nerveOSCRouter, STORE_PATH)
 

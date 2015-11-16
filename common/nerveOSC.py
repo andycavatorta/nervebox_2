@@ -19,7 +19,7 @@ def parse(nerveOSC_str):
 	return {
 		"host":path_l[0],
 		"path":path_str,
-		"innerpath":"/"+"/".join(path_l[2:-1]),
+		"innerpath":"/"+"/".join(path_l[1:]),
 		"params": json.loads(params_j)
 	}
 

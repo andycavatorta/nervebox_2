@@ -43,6 +43,7 @@ class OutgoingSocket(threading.Thread):
 
     def send(self, msg):
         #try:
+            print "duplexSocket.OutgoingSocket.send --> ", msg
             self.socket.send_string(msg)
             msg = self.socket.recv()
             if self.callback:
