@@ -174,7 +174,7 @@ def ping(params):
 def handleNOSC(nosc_d):
     #nosc_d["params"]
     try:
-        pathToMethod_d[nosc_d["innerpath"]]()
+        pathToMethod_d[nosc_d["innerpath"]](nosc_d["params"])
     except Exception as e:
         traceback.print_exc()
         print "device: path not found", e
