@@ -13,8 +13,8 @@ midi_out = mido.open_output(oNames[1])
 def sound_low_conga_accent(params):
     pass
 def sound_low_conga_bang(params):
-    
-    midi_out.send(mido.Message('note_on', note=63))
+
+    midi_out.send(mido.Message('note_on', note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_low_conga_off(params):
     pass
 def sound_low_conga_pitch(params):
@@ -22,7 +22,7 @@ def sound_low_conga_pitch(params):
 def sound_hi_conga_accent(params):
     pass
 def sound_hi_conga_bang(params):
-    midi_out.send(mido.Message('note_on', note=62))
+    midi_out.send(mido.Message('note_on', note=62, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_hi_conga_off(params):
     pass
 def sound_hi_conga_pitch(params):
@@ -30,8 +30,7 @@ def sound_hi_conga_pitch(params):
 def sound_timbale_accent(params):
     pass
 def sound_timbale_bang(params):
-    print params["dynamics"]["amplitude"]*127
-    midi_out.send(mido.Message('note_on', note=65))
+    midi_out.send(mido.Message('note_on', note=65, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_timbale_off(params):
     pass
 def sound_timbale_pitch(params):
@@ -39,7 +38,7 @@ def sound_timbale_pitch(params):
 def sound_low_cowbell_accent(params):
     pass
 def sound_low_cowbell_bang(params):
-    midi_out.send(mido.Message('note_on', note=68))
+    midi_out.send(mido.Message('note_on', note=68, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_low_cowbell_off(params):
     pass
 def sound_low_cowbell_pitch(params):
@@ -47,7 +46,7 @@ def sound_low_cowbell_pitch(params):
 def sound_hi_cowbell_accent(params):
     pass
 def sound_hi_cowbell_bang(params):
-    midi_out.send(mido.Message('note_on', note=67))
+    midi_out.send(mido.Message('note_on', note=67, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_hi_cowbell_off(params):
     pass
 def sound_hi_cowbell_pitch(params):
@@ -55,7 +54,7 @@ def sound_hi_cowbell_pitch(params):
 def sound_hand_clap_accent(params):
     pass
 def sound_hand_clap_bang(params):
-    midi_out.send(mido.Message('note_on', note=39))
+    midi_out.send(mido.Message('note_on', note=39, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_hand_clap_off(params):
     pass
 def sound_hand_clap_pitch(params):
@@ -63,7 +62,7 @@ def sound_hand_clap_pitch(params):
 def sound_crash_cymbal_accent(params):
     pass
 def sound_crash_cymbal_bang(params):
-    midi_out.send(mido.Message('note_on', note=49))
+    midi_out.send(mido.Message('note_on', note=49, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_crash_cymbal_off(params):
     pass
 def sound_crash_cymbal_pitch(params):
@@ -71,7 +70,7 @@ def sound_crash_cymbal_pitch(params):
 def sound_ride_cymbal_accent(params):
     pass
 def sound_ride_cymbal_bang(params):
-    midi_out.send(mido.Message('note_on', note=51))
+    midi_out.send(mido.Message('note_on', note=51, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_ride_cymbal_off(params):
     pass
 def sound_ride_cymbal_pitch(params):
@@ -79,7 +78,7 @@ def sound_ride_cymbal_pitch(params):
 def sound_bass_drum_accent(params):
     pass
 def sound_bass_drum_bang(params):
-    midi_out.send(mido.Message('note_on', note=35))
+    midi_out.send(mido.Message('note_on', note=35, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_bass_drum_off(params):
     pass
 def sound_bass_drum_pitch(params):
@@ -87,7 +86,7 @@ def sound_bass_drum_pitch(params):
 def sound_snare_drum_accent(params):
     pass
 def sound_snare_drum_bang(params):
-    midi_out.send(mido.Message('note_on', note=38))
+    midi_out.send(mido.Message('note_on', note=38, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_snare_drum_off(params):
     pass
 def sound_snare_drum_pitch(params):
@@ -95,7 +94,7 @@ def sound_snare_drum_pitch(params):
 def sound_low_tom_accent(params):
     pass
 def sound_low_tom_bang(params):
-    midi_out.send(mido.Message('note_on', note=41))
+    midi_out.send(mido.Message('note_on', note=41, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_low_tom_off(params):
     pass
 def sound_low_tom_pitch(params):
@@ -103,7 +102,7 @@ def sound_low_tom_pitch(params):
 def sound_mid_tom_accent(params):
     pass
 def sound_mid_tom_bang(params):
-    midi_out.send(mido.Message('note_on', note=45))
+    midi_out.send(mido.Message('note_on', note=45, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_mid_tom_off(params):
     pass
 def sound_mid_tom_pitch(params):
@@ -111,7 +110,7 @@ def sound_mid_tom_pitch(params):
 def sound_hi_tom_accent(params):
     pass
 def sound_hi_tom_bang(params):
-    midi_out.send(mido.Message('note_on', note=48))
+    midi_out.send(mido.Message('note_on', note=48, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_hi_tom_off(params):
     pass
 def sound_hi_tom_pitch(params):
@@ -119,7 +118,7 @@ def sound_hi_tom_pitch(params):
 def sound_rim_shot_accent(params):
     pass
 def sound_rim_shot_bang(params):
-    midi_out.send(mido.Message('note_on', note=37))
+    midi_out.send(mido.Message('note_on', note=37, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_rim_shot_off(params):
     pass
 def sound_rim_shot_pitch(params):
@@ -128,7 +127,7 @@ def sound_closed_hi_hat_accent(params):
     pass
 def sound_closed_hi_hat_bang(params):
     # open hi-hat is note 46.  how to control open/close?
-    midi_out.send(mido.Message('note_on', note=42))
+    midi_out.send(mido.Message('note_on', note=42, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_closed_hi_hat_off(params):
     pass
 def sound_closed_hi_hat_pitch(params):
@@ -136,7 +135,7 @@ def sound_closed_hi_hat_pitch(params):
 def sound_open_hi_hat_accent(params):
     pass
 def sound_open_hi_hat_bang(params):
-    midi_out.send(mido.Message('note_on', note=46))
+    midi_out.send(mido.Message('note_on', note=46, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_open_hi_hat_off(params):
     pass
 def sound_open_hi_hat_pitch(params):
