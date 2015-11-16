@@ -252,7 +252,7 @@ def handleNOSC(nosc_d):
         "/ping/":ping,
     }
     try:
-        pathToMethod_d[nosc_d["innerpath"]](nosc_d["params_j"])
+        pathToMethod_d[nosc_d["innerpath"]](nosc_d["params"])
     except Exception as e:
         print "device: path not found", e
 
