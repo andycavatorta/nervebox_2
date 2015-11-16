@@ -172,10 +172,15 @@ def ping(params):
     pass
 
 def handleNOSC(nosc_d):
-    print nosc_d
-
+    print repr(nosc_d)
+    return
+    
+    p = nosc_d["params"]
+    print "p=",p
+    d = json.loads(p)
+    print "d=",d
     try:
-        pathToMethod_d[nosc_d["innerpath"]](json.loads(nosc_d["params"]))
+        pathToMethod_d[nosc_d["innerpath"]]({})
     except Exception as e:
         traceback.print_exc()
         print "device: path not found", e
