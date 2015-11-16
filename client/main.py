@@ -42,8 +42,8 @@ device.init()
 
 # SET UP NETWORKING
 def duplexSockets_handleMessages(msg):
-    print "duplexPort_handleMessages", msg
     print "------------", nerveOSC.parse(msg)
+    print "duplexPort_handleMessages", msg
     device.handleNOSC(nerveOSC.parse(msg))
 
 def duplexSockets_handleOutgoingConfirmation(msg):

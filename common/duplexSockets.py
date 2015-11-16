@@ -20,6 +20,7 @@ class IncomingSocket(threading.Thread):
         while True:
             try:
                 message = self.socket.recv()
+                print "duplexSocket.IncomingSocket --> ", message
                 resp = self.callback(message)
                 if resp == None:
                     resp = ""
