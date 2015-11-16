@@ -13,6 +13,7 @@ midi_out = mido.open_output(oNames[1])
 def sound_low_conga_accent(params):
     pass
 def sound_low_conga_bang(params):
+    
     midi_out.send(mido.Message('note_on', note=63))
 def sound_low_conga_off(params):
     pass
@@ -172,7 +173,6 @@ def ping(params):
     pass
 
 def handleNOSC(nosc_d):
-    #nosc_d["params"]
     try:
         pathToMethod_d[nosc_d["innerpath"]](nosc_d["params"])
     except Exception as e:
