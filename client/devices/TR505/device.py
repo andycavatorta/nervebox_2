@@ -8,149 +8,148 @@ midi_out = mido.open_output(oNames[1])
 
 # creating OSC endpoint methds
 
-def sound_low_conga_accent(value):
+def sound_low_conga_accent(params):
     pass
-def sound_low_conga_bang(value):
+def sound_low_conga_bang(params):
     midi_out.send(mido.Message('note_on', note=63))
-def sound_low_conga_off(value):
+def sound_low_conga_off(params):
     pass
-def sound_low_conga_pitch(value):
+def sound_low_conga_pitch(params):
     pass
-def sound_hi_conga_accent(value):
+def sound_hi_conga_accent(params):
     pass
-def sound_hi_conga_bang(value):
+def sound_hi_conga_bang(params):
     midi_out.send(mido.Message('note_on', note=62))
-def sound_hi_conga_off(value):
+def sound_hi_conga_off(params):
     pass
-def sound_hi_conga_pitch(value):
+def sound_hi_conga_pitch(params):
     pass
-def sound_timbale_accent(value):
+def sound_timbale_accent(params):
     pass
-def sound_timbale_bang(value):
+def sound_timbale_bang(params):
     midi_out.send(mido.Message('note_on', note=65))
-def sound_timbale_off(value):
+def sound_timbale_off(params):
     pass
-def sound_timbale_pitch(value):
+def sound_timbale_pitch(params):
     pass
-def sound_low_cowbell_accent(value):
+def sound_low_cowbell_accent(params):
     pass
-def sound_low_cowbell_bang(value):
+def sound_low_cowbell_bang(params):
     midi_out.send(mido.Message('note_on', note=68))
-def sound_low_cowbell_off(value):
+def sound_low_cowbell_off(params):
     pass
-def sound_low_cowbell_pitch(value):
+def sound_low_cowbell_pitch(params):
     pass
-def sound_hi_cowbell_accent(value):
+def sound_hi_cowbell_accent(params):
     pass
-def sound_hi_cowbell_bang(value):
+def sound_hi_cowbell_bang(params):
     midi_out.send(mido.Message('note_on', note=67))
-def sound_hi_cowbell_off(value):
+def sound_hi_cowbell_off(params):
     pass
-def sound_hi_cowbell_pitch(value):
+def sound_hi_cowbell_pitch(params):
     pass
-def sound_hand_clap_accent(value):
+def sound_hand_clap_accent(params):
     pass
-def sound_hand_clap_bang(value):
+def sound_hand_clap_bang(params):
     midi_out.send(mido.Message('note_on', note=39))
-def sound_hand_clap_off(value):
+def sound_hand_clap_off(params):
     pass
-def sound_hand_clap_pitch(value):
+def sound_hand_clap_pitch(params):
     pass
-def sound_crash_cymbal_accent(value):
+def sound_crash_cymbal_accent(params):
     pass
-def sound_crash_cymbal_bang(value):
+def sound_crash_cymbal_bang(params):
     midi_out.send(mido.Message('note_on', note=49))
-def sound_crash_cymbal_off(value):
+def sound_crash_cymbal_off(params):
     pass
-def sound_crash_cymbal_pitch(value):
+def sound_crash_cymbal_pitch(params):
     pass
-def sound_ride_cymbal_accent(value):
+def sound_ride_cymbal_accent(params):
     pass
-def sound_ride_cymbal_bang(value):
+def sound_ride_cymbal_bang(params):
     midi_out.send(mido.Message('note_on', note=51))
-def sound_ride_cymbal_off(value):
+def sound_ride_cymbal_off(params):
     pass
-def sound_ride_cymbal_pitch(value):
+def sound_ride_cymbal_pitch(params):
     pass
-def sound_bass_drum_accent(value):
+def sound_bass_drum_accent(params):
     pass
-def sound_bass_drum_bang(value):
+def sound_bass_drum_bang(params):
     midi_out.send(mido.Message('note_on', note=35))
-def sound_bass_drum_off(value):
+def sound_bass_drum_off(params):
     pass
-def sound_bass_drum_pitch(value):
+def sound_bass_drum_pitch(params):
     pass
-def sound_snare_drum_accent(value):
+def sound_snare_drum_accent(params):
     pass
-def sound_snare_drum_bang(value):
+def sound_snare_drum_bang(params):
     midi_out.send(mido.Message('note_on', note=38))
-def sound_snare_drum_off(value):
+def sound_snare_drum_off(params):
     pass
-def sound_snare_drum_pitch(value):
+def sound_snare_drum_pitch(params):
     pass
-def sound_low_tom_accent(value):
+def sound_low_tom_accent(params):
     pass
-def sound_low_tom_bang(value):
+def sound_low_tom_bang(params):
     midi_out.send(mido.Message('note_on', note=41))
-def sound_low_tom_off(value):
+def sound_low_tom_off(params):
     pass
-def sound_low_tom_pitch(value):
+def sound_low_tom_pitch(params):
     pass
-def sound_mid_tom_accent(value):
+def sound_mid_tom_accent(params):
     pass
-def sound_mid_tom_bang(value):
+def sound_mid_tom_bang(params):
     midi_out.send(mido.Message('note_on', note=45))
-def sound_mid_tom_off(value):
+def sound_mid_tom_off(params):
     pass
-def sound_mid_tom_pitch(value):
+def sound_mid_tom_pitch(params):
     pass
-def sound_hi_tom_accent(value):
+def sound_hi_tom_accent(params):
     pass
-def sound_hi_tom_bang(value):
+def sound_hi_tom_bang(params):
     midi_out.send(mido.Message('note_on', note=48))
-def sound_hi_tom_off(value):
+def sound_hi_tom_off(params):
     pass
-def sound_hi_tom_pitch(value):
+def sound_hi_tom_pitch(params):
     pass
-def sound_rim_shot_accent(value):
+def sound_rim_shot_accent(params):
     pass
-def sound_rim_shot_bang(value):
+def sound_rim_shot_bang(params):
     midi_out.send(mido.Message('note_on', note=37))
-def sound_rim_shot_off(value):
+def sound_rim_shot_off(params):
     pass
-def sound_rim_shot_pitch(value):
+def sound_rim_shot_pitch(params):
     pass
-def sound_closed_hi_hat_accent(value):
+def sound_closed_hi_hat_accent(params):
     pass
-def sound_closed_hi_hat_bang(value):
+def sound_closed_hi_hat_bang(params):
     # open hi-hat is note 46.  how to control open/close?
     midi_out.send(mido.Message('note_on', note=42))
-def sound_closed_hi_hat_off(value):
+def sound_closed_hi_hat_off(params):
     pass
-def sound_closed_hi_hat_pitch(value):
+def sound_closed_hi_hat_pitch(params):
     pass
-def sound_open_hi_hat_accent(value):
+def sound_open_hi_hat_accent(params):
     pass
-def sound_open_hi_hat_bang(value):
+def sound_open_hi_hat_bang(params):
     midi_out.send(mido.Message('note_on', note=46))
-def sound_open_hi_hat_off(value):
+def sound_open_hi_hat_off(params):
     pass
-def sound_open_hi_hat_pitch(value):
+def sound_open_hi_hat_pitch(params):
     pass
-def system_power_on(value):
+def system_power_on(params):
     pass
-def system_power_off(value):
+def system_power_off(params):
     pass
-def system_clock_1(value):
+def system_clock_1(params):
     pass
-def system_clock_2(value):
+def system_clock_2(params):
     pass
-def system_clock_3(value):
+def system_clock_3(params):
     pass
-def system_clock_4(value):
+def system_clock_4(params):
     pass
-def system_miditest_start(value):
-    print "system_miditest_start", value
+def system_miditest_start(params):
     for channel in range(16):
         for pitch in range(28,70):
             msg_midi = mido.Message('note_on')
@@ -160,13 +159,13 @@ def system_miditest_start(value):
             midi_out.send(msg_midi)
             time.sleep(1)
 
-def system_miditest_stop(value):
+def system_miditest_stop(params):
     midi_out.panic()
     pass
-def system_midipanic(value):
+def system_midipanic(params):
     pass
 
-def ping(value):
+def ping(params):
     pass
 
 def handleNOSC(nosc_d):
@@ -251,7 +250,7 @@ def handleNOSC(nosc_d):
         "/ping/":ping,
     }
     try:
-        pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
+        pathToMethod_d[nosc_d["innerpath"]](nosc_d["params"])
     except Exception as e:
         print "device: path not found", e
 
