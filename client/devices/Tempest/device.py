@@ -156,7 +156,7 @@ def system_miditest_start(value):
             msg_midi = mido.Message('note_on')
             msg_midi.channel = channel
             msg_midi.note = pitch
-            print msg_midi
+            #print msg_midi
             midi_out.send(msg_midi)
             time.sleep(0.1)
 
