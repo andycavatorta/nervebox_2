@@ -59,7 +59,7 @@ class Hosts():
     def removeHost(self, hostname):
         return 
     def routeMessageToHost(self,hostname,msg):
-        #print self.hosts
+        print hostname, self.hosts
         if self.hosts.has_key(hostname):
             self.hosts[hostname].send(msg)
         else:
@@ -79,7 +79,6 @@ class Host():
         #print "handleOutgoingResponse",self.hostname, msg
     def handleException(self, msg):
         print "handleException",self.hostname, msg
-
     def setSend(self, func):
         self.send = func
 

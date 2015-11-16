@@ -17,8 +17,11 @@ mapping operations:
     input
 """
 #import store
+import json
+import math
 import os
 import sys
+import traceback
 
 # constants
 PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
@@ -35,6 +38,21 @@ sys.path.append(SERVER_PATH)
 import nerveOSC
 
 mappings = None
+
+#   THIS SHOULD PROBABLY GO IN ITS OWN LIBRARY
+
+def makePitch(midiNoteNumber, cents_int=0):
+    return {
+        pitch:["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"][midiNoteNumber%12],
+        octave:math.floor(midiNoteNumber/12)-1,
+        cents:cents_int,
+        freq:440.0 * (2.0**((midiNoteNumber-69+bend_f)/12.0)),
+        midi:midiNoteNumber
+    }
+
+
+# #######################################
+
 
 def midiIn(deviceName, cmd, channel, note, velocity):
     global mappings
@@ -65,13 +83,37 @@ class Mappings():
         pass
     def setOutput(self, callback):
         self.callback = callback
+    def makePitch(self, midiNoteNumber, cents_int=0):
+        return {
+            'pitch':["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"][midiNoteNumber%12],
+            'octave':math.floor(midiNoteNumber/12)-1,
+            'cents':cents_int,
+            'freq':440.0 * (2.0**((midiNoteNumber-69+bend_f)/12.0)),
+            'midi':midiNoteNumber
+        }
+    def makeDynamics(self,midiVelocity):
+        return {'amplitude':float(midiVelocity)/128.0}
+        
+    def makeTimbre(self):
+        # to do: finish this
+        return {} 
+    
     def input(self, deviceName, cmd, channel, note, velocity):
         try:
-            nosc = self.mapping[deviceName][str(channel)][str(cmd)][str(note)]
-            nosc = nosc.replace("@pitch", str(note)).replace("@velocity", str(velocity))
+            # midi properties to send: velocity, pitch(+pitchwheel), modwheel as timbre
+            m = self.mapping[deviceName][str(channel)][str(cmd)][str(note)]
+            x_params = m[2]
+            d = self.makeDynamics(velocity) if "velocity" in x_params and cmd==9 else self.makeDynamics(0)
+            p = self.makePitch(note) if "pitch" in x_params else {}
+            t = self.makeTimbre() if "timbre" in x_params else {}
+            payload_d = {'dynamics':d,'pitch':p,'timbre':t}
+            paylod_j = json.dumps(payload_d, separators=(',', ':'))
+            nosc = nerveOSC.assemble(m[0], m[1], paylod_j)
             self.callback(nosc)
         except Exception, e:
-            print "exception in mapMIDIToNerveOSC.Mappings.input:", deviceName, cmd, channel, note, velocity, e
+            pass
+            #traceback.print_exc()
+            #print "exception in mapMIDIToNerveOSC.Mappings.input:", deviceName, cmd, channel, note, velocity, e
 
 inputs = {
     "Alesis_Q25":None,
@@ -355,118 +397,118 @@ test1 = {
     "Alesis_Q25":{
         "0":{ # channel
             "9":{#note on
-                "48":"/TR505/sound/low_conga/bang/",
-                "49":"/TR505/sound/hi_conga/bang/",
-                "50":"/TR505/sound/timbale/bang/",
-                "51":"/TR505/sound/low_cowbell/bang/",
-                "52":"/TR505/sound/hi_cowbell/bang/",
-                "53":"/TR505/sound/hand_clap/bang/",
-                "54":"/TR505/sound/crash_cymbal/bang/",
-                "55":"/TR505/sound/ride_cymbal/bang/",
-                "56":"/TR505/sound/bass_drum/bang/",
-                "57":"/TR505/sound/snare_drum/bang/",
-                "58":"/TR505/sound/low_tom/bang/",
-                "59":"/TR505/sound/mid_tom/bang/",
-                "60":"/TR505/sound/hi_tom/bang/",
-                "61":"/TR505/sound/rim_shot/bang/",
-                "62":"/TR505/sound/closed_hi-hat/bang/",
-                "63":"/TR505/sound/open_hi-hat/bang/",
+                "48":["TR505","/sound/low_conga/bang",["velocity"]],
+                "49":["TR505","/sound/hi_conga/bang",["velocity"]],
+                "50":["TR505","/sound/timbale/bang",["velocity"]],
+                "51":["TR505","/sound/low_cowbell/bang",["velocity"]],
+                "52":["TR505","/sound/hi_cowbell/bang",["velocity"]],
+                "53":["TR505","/sound/hand_clap/bang",["velocity"]],
+                "54":["TR505","/sound/crash_cymbal/bang",["velocity"]],
+                "55":["TR505","/sound/ride_cymbal/bang",["velocity"]],
+                "56":["TR505","/sound/bass_drum/bang",["velocity"]],
+                "57":["TR505","/sound/snare_drum/bang",["velocity"]],
+                "58":["TR505","/sound/low_tom/bang",["velocity"]],
+                "59":["TR505","/sound/mid_tom/bang",["velocity"]],
+                "60":["TR505","/sound/hi_tom/bang",["velocity"]],
+                "61":["TR505","/sound/rim_shot/bang",["velocity"]],
+                "62":["TR505","/sound/closed_hi-hat/bang",["velocity"]],
+                "63":["TR505","/sound/open_hi-hat/bang",["velocity"]],
             },
             "8":{#note off
-                "48":"/TR505/sound/low_conga/off/",
-                "49":"/TR505/sound/hi_conga/off/",
-                "50":"/TR505/sound/timbale/off/",
-                "51":"/TR505/sound/low_cowbell/off/",
-                "52":"/TR505/sound/hi_cowbell/off/",
-                "53":"/TR505/sound/hand_clap/off/",
-                "54":"/TR505/sound/crash_cymbal/off/",
-                "55":"/TR505/sound/ride_cymbal/off/",
-                "56":"/TR505/sound/bass_drum/off/",
-                "57":"/TR505/sound/snare_drum/off/",
-                "58":"/TR505/sound/low_tom/off/",
-                "59":"/TR505/sound/mid_tom/off/",
-                "60":"/TR505/sound/hi_tom/off/",
-                "61":"/TR505/sound/rim_shot/off/",
-                "62":"/TR505/sound/closed_hi-hat/off/",
-                "63":"/TR505/sound/open_hi-hat/off/",
+                "48":["TR505","/sound/low_conga/off",["velocity"]],
+                "49":["TR505","/sound/hi_conga/off",["velocity"]],
+                "50":["TR505","/sound/timbale/off",["velocity"]],
+                "51":["TR505","/sound/low_cowbell/off",["velocity"]],
+                "52":["TR505","/sound/hi_cowbell/off",["velocity"]],
+                "53":["TR505","/sound/hand_clap/off",["velocity"]],
+                "54":["TR505","/sound/crash_cymbal/off",["velocity"]],
+                "55":["TR505","/sound/ride_cymbal/off",["velocity"]],
+                "56":["TR505","/sound/bass_drum/off",["velocity"]],
+                "57":["TR505","/sound/snare_drum/off",["velocity"]],
+                "58":["TR505","/sound/low_tom/off",["velocity"]],
+                "59":["TR505","/sound/mid_tom/off",["velocity"]],
+                "60":["TR505","/sound/hi_tom/off",["velocity"]],
+                "61":["TR505","/sound/rim_shot/off",["velocity"]],
+                "62":["TR505","/sound/closed_hi-hat/off",["velocity"]],
+                "63":["TR505","/sound/open_hi-hat/off",["velocity"]],
             }
         }
     },
     "M-Audio_Oxygen_88":{
         "1":{ # channel
             "9":{#note on
-                "48":"/HR16/sound/snare/bang/",
-                "49":"/HR16/sound/closed_hat/bang/",
-                "50":"/HR16/sound/mid_hat/bang/",
-                "51":"/HR16/sound/open_hat/bang/",
-                "52":"/HR16/sound/tom_1/bang/",
-                "53":"/HR16/sound/tom_2/bang/",
-                "54":"/HR16/sound/tom_3/bang/",
-                "55":"/HR16/sound/tom_4/bang/",
-                "56":"/HR16/sound/perc_1/bang/",
-                "57":"/HR16/sound/perc_2/bang/",
-                "58":"/HR16/sound/perc_3/bang/",
-                "59":"/HR16/sound/perc_4/bang/",
-                "60":"/HR16/sound/kick/bang/",
-                "61":"/HR16/sound/claps/bang/",
-                "62":"/HR16/sound/ride/bang/",
-                "63":"/HR16/sound/crash/bang/",
+                "48":["HR16","/sound/snare/bang",["velocity"]],
+                "49":["HR16","/sound/closed_hat/bang",["velocity"]],
+                "50":["HR16","/sound/mid_hat/bang",["velocity"]],
+                "51":["HR16","/sound/open_hat/bang",["velocity"]],
+                "52":["HR16","/sound/tom_1/bang",["velocity"]],
+                "53":["HR16","/sound/tom_2/bang",["velocity"]],
+                "54":["HR16","/sound/tom_3/bang",["velocity"]],
+                "55":["HR16","/sound/tom_4/bang",["velocity"]],
+                "56":["HR16","/sound/perc_1/bang",["velocity"]],
+                "57":["HR16","/sound/perc_2/bang",["velocity"]],
+                "58":["HR16","/sound/perc_3/bang",["velocity"]],
+                "59":["HR16","/sound/perc_4/bang",["velocity"]],
+                "60":["HR16","/sound/kick/bang",["velocity"]],
+                "61":["HR16","/sound/claps/bang",["velocity"]],
+                "62":["HR16","/sound/ride/bang",["velocity"]],
+                "63":["HR16","/sound/crash/bang",["velocity"]],
 
-                "64":"/Tempest/sound/low_conga/bang/",
-                "65":"/Tempest/sound/hi_conga/bang/",
-                "66":"/Tempest/sound/timbale/bang/",
-                "67":"/Tempest/sound/low_cowbell/bang/",
-                "68":"/Tempest/sound/hi_cowbell/bang/",
-                "69":"/Tempest/sound/hand_clap/bang/",
-                "70":"/Tempest/sound/crash_cymbal/bang/",
-                "71":"/Tempest/sound/ride_cymbal/bang/",
-                "72":"/Tempest/sound/bass_drum/bang/",
-                "73":"/Tempest/sound/snare_drum/bang/",
-                "74":"/Tempest/sound/low_tom/bang/",
-                "75":"/Tempest/sound/mid_tom/bang/",
-                "76":"/Tempest/sound/hi_tom/bang/",
-                "77":"/Tempest/sound/rim_shot/bang/",
-                "78":"/Tempest/sound/closed_hi-hat/bang/",
-                "79":"/Tempest/sound/open_hi-hat/bang/",
+                "64":["Tempest","/sound/low_conga/bang",["velocity"]],
+                "65":["Tempest","/sound/hi_conga/bang",["velocity"]],
+                "66":["Tempest","/sound/timbale/bang",["velocity"]],
+                "67":["Tempest","/sound/low_cowbell/bang",["velocity"]],
+                "68":["Tempest","/sound/hi_cowbell/bang",["velocity"]],
+                "69":["Tempest","/sound/hand_clap/bang",["velocity"]],
+                "70":["Tempest","/sound/crash_cymbal/bang",["velocity"]],
+                "71":["Tempest","/sound/ride_cymbal/bang",["velocity"]],
+                "72":["Tempest","/sound/bass_drum/bang",["velocity"]],
+                "73":["Tempest","/sound/snare_drum/bang",["velocity"]],
+                "74":["Tempest","/sound/low_tom/bang",["velocity"]],
+                "75":["Tempest","/sound/mid_tom/bang",["velocity"]],
+                "76":["Tempest","/sound/hi_tom/bang",["velocity"]],
+                "77":["Tempest","/sound/rim_shot/bang",["velocity"]],
+                "78":["Tempest","/sound/closed_hi-hat/bang",["velocity"]],
+                "79":["Tempest","/sound/open_hi-hat/bang",["velocity"]],
                 
-                "80":"/Tempest/system/miditest/start",
-                "81":"/Tempest/system/miditest/stop",
-                "82":"/Tempest/system/midipanic",
+                "80":["Tempest","/system/miditest/start",[]],
+                "81":["Tempest","/system/miditest/stop",[]],
+                "82":["Tempest","/system/midipanic",[]],
             },
             "8":{#note off
-                "48":"/HR16/sound/snare/off/",
-                "49":"/HR16/sound/closed_hat/off/",
-                "50":"/HR16/sound/mid_hat/off/",
-                "51":"/HR16/sound/open_hat/off/",
-                "52":"/HR16/sound/tom_1/off/",
-                "53":"/HR16/sound/tom_2/off/",
-                "54":"/HR16/sound/tom_3/off/",
-                "55":"/HR16/sound/tom_4/off/",
-                "56":"/HR16/sound/perc_1/off/",
-                "57":"/HR16/sound/perc_2/off/",
-                "58":"/HR16/sound/perc_3/off/",
-                "59":"/HR16/sound/perc_4/off/",
-                "60":"/HR16/sound/kick/off/",
-                "61":"/HR16/sound/claps/off/",
-                "62":"/HR16/sound/ride/off/",
-                "63":"/HR16/sound/crash/off/",
+                "48":["HR16","/sound/snare/off",["velocity"]],
+                "49":["HR16","/sound/closed_hat/off",["velocity"]],
+                "50":["HR16","/sound/mid_hat/off",["velocity"]],
+                "51":["HR16","/sound/open_hat/off",["velocity"]],
+                "52":["HR16","/sound/tom_1/off",["velocity"]],
+                "53":["HR16","/sound/tom_2/off",["velocity"]],
+                "54":["HR16","/sound/tom_3/off",["velocity"]],
+                "55":["HR16","/sound/tom_4/off",["velocity"]],
+                "56":["HR16","/sound/perc_1/off",["velocity"]],
+                "57":["HR16","/sound/perc_2/off",["velocity"]],
+                "58":["HR16","/sound/perc_3/off",["velocity"]],
+                "59":["HR16","/sound/perc_4/off",["velocity"]],
+                "60":["HR16","/sound/kick/off",["velocity"]],
+                "61":["HR16","/sound/claps/off",["velocity"]],
+                "62":["HR16","/sound/ride/off",["velocity"]],
+                "63":["HR16","/sound/crash/off",["velocity"]],
 
-                "64":"/Tempest/sound/low_conga/off/",
-                "65":"/Tempest/sound/hi_conga/off/",
-                "66":"/Tempest/sound/timbale/off/",
-                "67":"/Tempest/sound/low_cowbell/off/",
-                "68":"/Tempest/sound/hi_cowbell/off/",
-                "69":"/Tempest/sound/hand_clap/off/",
-                "70":"/Tempest/sound/crash_cymbal/off/",
-                "71":"/Tempest/sound/ride_cymbal/off/",
-                "72":"/Tempest/sound/bass_drum/off/",
-                "73":"/Tempest/sound/snare_drum/off/",
-                "74":"/Tempest/sound/low_tom/off/",
-                "75":"/Tempest/sound/mid_tom/off/",
-                "76":"/Tempest/sound/hi_tom/off/",
-                "77":"/Tempest/sound/rim_shot/off/",
-                "78":"/Tempest/sound/closed_hi-hat/off/",
-                "79":"/Tempest/sound/open_hi-hat/off/",
+                "64":["Tempest","/sound/low_conga/off",["velocity"]],
+                "65":["Tempest","/sound/hi_conga/off",["velocity"]],
+                "66":["Tempest","/sound/timbale/off",["velocity"]],
+                "67":["Tempest","/sound/low_cowbell/off",["velocity"]],
+                "68":["Tempest","/sound/hi_cowbell/off",["velocity"]],
+                "69":["Tempest","/sound/hand_clap/off",["velocity"]],
+                "70":["Tempest","/sound/crash_cymbal/off",["velocity"]],
+                "71":["Tempest","/sound/ride_cymbal/off",["velocity"]],
+                "72":["Tempest","/sound/bass_drum/off",["velocity"]],
+                "73":["Tempest","/sound/snare_drum/off",["velocity"]],
+                "74":["Tempest","/sound/low_tom/off",["velocity"]],
+                "75":["Tempest","/sound/mid_tom/off",["velocity"]],
+                "76":["Tempest","/sound/hi_tom/off",["velocity"]],
+                "77":["Tempest","/sound/rim_shot/off",["velocity"]],
+                "78":["Tempest","/sound/closed_hi-hat/off",["velocity"]],
+                "79":["Tempest","/sound/open_hi-hat/off",["velocity"]],
             },
         }
     },

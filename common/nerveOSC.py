@@ -2,44 +2,30 @@
 nerveOSC messages
 
 format:
-token types:
-	path/value 
-	time - @time
-	env - {name:value, name:value}
 
-implementing only path and value for now
+
+device/path/../path/verb {pitch:{},timbre:{},dynamics:{}}
+
+if device is undefined, path starts with /
+
 
 """
+import json
 import socket
 
 def parse(nerveOSC_str):
-	nerveOSC_l = nerveOSC_str.split(" ")
-	path = None
-	host = None
-	innerpath = ""
-	value = None
-	time = None
-	env = None
-	for token in nerveOSC_l:
-		if token[0] == "/":
-			path = token
-		if token[0] == "@":
-			time = token
-		if token[0] == "{":
-			env = token
-	path_l = path.split("/")
-	value  = path_l[-1:][0]
-	# replace w/ join or other string function
-	innerpath = "/"+"/".join(path_l[2:-1])
-	path = "/"+"/".join(path_l[1:])
+	path_str, params_j = nerveOSC_str.split(" ")
+	path_l = path_str.split("/")
 	return {
-		"host":path_l[1],
-		"path":path,
-		"innerpath":innerpath,
-		"value":value,
-		"time":time,
-		"env":env
+		"host":path_l[0],
+		"path":path_str,
+		"innerpath":"/"+"/".join(path_l[2:-1]),
+		"params": json.loads(params_j)
 	}
 
-def assemble(innerpath, value):
-	return "/%s%s/%s" % (socket.gethostname(),innerpath,str(value))
+
+def assemble(device_str, path_str, payload_str):
+	"""
+	path_str is formatted without or trailing leading slash
+	"""
+	return "%s%s %s" % (device_str, path_str, payload_str)
