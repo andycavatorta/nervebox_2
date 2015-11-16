@@ -173,6 +173,7 @@ def ping(params):
 
 def handleNOSC(nosc_d):
     print repr(nosc_d)
+    print repr(nosc_d["params"])
     return
     
     p = nosc_d["params"]
