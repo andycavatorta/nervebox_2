@@ -1,6 +1,7 @@
 import mido
 import time
 import json
+import traceback
 
 oNames = mido.get_output_names()
 
@@ -174,8 +175,9 @@ def handleNOSC(nosc_d):
     print nosc_d
 
     try:
-        pathToMethod_d[nosc_d["innerpath"]](json.loads(nosc_d["params"]))
+        pathToMethod_d[nosc_d["innerpath"]](json.load(nosc_d["params"]))
     except Exception as e:
+        traceback.print_exc()
         print "device: path not found", e
 
 def init():
