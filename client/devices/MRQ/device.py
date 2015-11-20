@@ -51,10 +51,11 @@ BALANCE_MODULE_ID = 40
 
 def sound_bass_bang(params):
     global bass
-    bass = 0 if bass > 0 else 65535
+    bass = 0
+    #bass = 0 if bass > 0 else 65535
     duplexPort.send(BASS_BANG_MODULE_ID,bass)
     time.sleep(PAUSE_TIME)
-    bass = 0 if bass > 0 else 65535 # loop around
+    bass = 65535 # loop around
     duplexPort.send(BASS_BANG_MODULE_ID,bass)
 def sound_bass_pitch(params):
     global clock0, clock1, clock2
