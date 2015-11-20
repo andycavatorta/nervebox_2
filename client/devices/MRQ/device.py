@@ -2,6 +2,7 @@ import duplexPort
 import time
 import os
 import sys
+import traceback
 
 PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
 #HOSTNAME = socket.gethostname()

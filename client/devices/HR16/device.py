@@ -1,5 +1,6 @@
 import mido
 import time
+import traceback
 
 oNames = mido.get_output_names()
 
