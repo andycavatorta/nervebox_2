@@ -13,7 +13,6 @@ midi_out = mido.open_output(oNames[1])
 def sound_low_conga_accent(params):
     pass
 def sound_low_conga_bang(params):
-
     midi_out.send(mido.Message('note_on', note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
 def sound_low_conga_off(params):
     pass

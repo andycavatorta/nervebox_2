@@ -391,6 +391,27 @@ outputs = {
             "/system/midipanic/":None,
         }
     },
+    "MRQ":{
+        "paths":{
+            "/sound/snare/bang/":None,
+            "/sound/snare/off/":None,
+            "/sound/bongo/bang/":None,
+            "/sound/bongo/off/":None,
+            "/sound/block/bang/":None,
+            "/sound/block/off/":None,
+            "/sound/bass/bang/":None,
+            "/sound/bass/off/":None,
+            "/sound/brush/bang/":None,
+            "/sound/brush/off/":None,
+            "/system/clock/1/set/":None,
+            "/system/clock/2/set/":None,
+            "/system/clock/3/set/":None,
+            "/system/clock/source/toggle/":None,
+            "/system/power/toggle/":None,
+            "/system/volume/set/":None,
+            "/system/balance/set/":None,
+        }
+    }
 }
 
 test1 = {
