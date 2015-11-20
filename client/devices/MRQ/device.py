@@ -13,6 +13,8 @@ sys.path.append(COMMON_PATH)
 
 import duplexPort
 
+duplexPort.init(None)
+
 volume = 0 # range 0-127
 clock0 = 0 # range 1-127
 clock1 = 0 # range 1-127
