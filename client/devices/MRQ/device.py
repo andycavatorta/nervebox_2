@@ -30,6 +30,9 @@ brush = 65535
 
 PAUSE_TIME = 0.005
 
+FPGA_ON = 0
+FPGA_OFF = 65535
+
 BASS_BANG_MODULE_ID = 23
 BLOCK_BANG_MODULE_ID = 22
 BONGO_BANG_MODULE_ID = 21
@@ -62,8 +65,10 @@ def sound_bass_pitch(params):
     clock = int(clock0 + clock1 + clock2/2)
     duplexPort.send(BASS_DRONE_MODULE_ID,clock) 
 def sound_bass_off(params):
-    clock = 0
-    duplexPort.send(BASS_DRONE_MODULE_ID,clock) 
+    #clock = 0
+    #duplexPort.send(BASS_DRONE_MODULE_ID,clock) 
+    bass = 65535 # loop around
+    duplexPort.send(BASS_BANG_MODULE_ID,bass)
 def sound_block_bang(params):
     global block
     block = 0 if block > 0 else 65535
