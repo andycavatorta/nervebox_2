@@ -161,6 +161,17 @@ def ping(params):
 def init():
     pass
 
+def handleNOSC(nosc_d):
+    #print nosc_d
+    #print 'nosc_d["innerpath"]', nosc_d["innerpath"]
+    try:
+        pathToMethod_d[nosc_d["innerpath"]](nosc_d["params"])
+    except Exception as e:
+        traceback.print_exc()
+        print "device: path not found", e
+    #pathToMethod_d[nosc_d["innerpath"]](nosc_d["value"])
+
+
 pathToMethod_d = {
     "/sound/bass/bang":sound_bass_bang,
     "/sound/bass/off":sound_bass_off,
