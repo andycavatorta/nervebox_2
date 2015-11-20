@@ -11,100 +11,100 @@ midi_out = mido.open_output(oNames[1])
 # creating OSC endpoint methds
 
 def sound_0_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=66, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_1_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=67, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_2_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=68, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_3_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=69, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_4_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=70, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_5_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=71, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_6_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=72, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_7_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=73, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_8_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=74, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_9_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=75, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_10_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=76, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_11_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=77, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_12_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=78, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_13_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=79, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_14_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=80, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_15_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=81, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_16_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=82, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_17_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=83, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_18_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=84, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_19_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=85, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_20_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=86, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_21_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=87, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_22_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=88, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_23_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=89, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_24_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=90, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_25_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=91, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_26_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=92, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_27_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=93, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_28_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=94, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_29_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=95, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_30_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=96, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_31_bang(params):
-    #midi_out.send(mido.Message('note_on', channel = 0, note=63, velocity=int(params["dynamics"]["amplitude"]*127)))
+    midi_out.send(mido.Message('note_on', channel = 0, note=97, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 
 
@@ -128,7 +128,7 @@ def system_miditest_start(params):
             msg_midi.note = pitch
             print msg_midi
             midi_out.send(msg_midi)
-            time.sleep(1)
+            time.sleep(0.1)
 
 def system_miditest_stop(params):
     midi_out.panic()
