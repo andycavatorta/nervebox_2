@@ -18,16 +18,16 @@ class IncomingSocket(threading.Thread):
         self.socket.bind("tcp://*:%s" % local_port)
     def run(self):
         while True:
-            try:
+            #try:
                 message = self.socket.recv()
                 #print "duplexSocket.IncomingSocket --> ", message
                 resp = self.callback(message)
                 if resp == None:
                     resp = ""
                 self.socket.send(resp)
-            except Exception as e:
-                print "exception in duplexSockets.IncomingSocket.send", e
-                self.exception_callback(e)
+            #except Exception as e:
+            #    print "exception in duplexSockets.IncomingSocket.send", e
+            #    self.exception_callback(e)
 
 class OutgoingSocket(threading.Thread):
     def __init__(self, remote_ip, remote_port, ping_msg, callback,exception_callback):

@@ -497,10 +497,6 @@ outputs = {
     }
 }
 
-
-
-
-
 test1 = {
     "Alesis_Q25":{
         "0":{ # channel
