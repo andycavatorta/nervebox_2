@@ -3,7 +3,7 @@ import os
 import duplexPort
 
 PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
-HOSTNAME = socket.gethostname()
+#HOSTNAME = socket.gethostname()
 BASE_PATH = "/home/pi/nervebox_2/" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
 COMMON_PATH = "%scommon/" % (BASE_PATH )
 
