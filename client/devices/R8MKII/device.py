@@ -121,14 +121,14 @@ def system_clock_3(params):
 def system_clock_4(params):
     pass
 def system_miditest_start(params):
-    #for channel in range(16):
+    for channel in range(16):
         for pitch in range(0,127):
             msg_midi = mido.Message('note_on')
-            msg_midi.channel = 9
+            msg_midi.channel = channel
             msg_midi.note = pitch
             print msg_midi
             midi_out.send(msg_midi)
-            time.sleep(1)
+            time.sleep(0.1)
 
 def system_miditest_stop(params):
     midi_out.panic()
