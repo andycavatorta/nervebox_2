@@ -1,5 +1,5 @@
 import time
-
+import os
 import duplexPort
 
 PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi

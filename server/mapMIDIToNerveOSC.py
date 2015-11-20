@@ -100,6 +100,7 @@ class Mappings():
     
     def input(self, deviceName, cmd, channel, note, velocity):
         try:
+            print deviceName, cmd, channel, note, velocity
             # midi properties to send: velocity, pitch(+pitchwheel), modwheel as timbre
             m = self.mapping[deviceName][str(channel)][str(cmd)][str(note)]
             x_params = m[2]
@@ -116,8 +117,33 @@ class Mappings():
             #print "exception in mapMIDIToNerveOSC.Mappings.input:", deviceName, cmd, channel, note, velocity, e
 
 inputs = {
-    "Alesis_Q25":None,
-    "M-Audio_Oxygen_88":None
+    "Alesis_Q25":{
+        "state":{
+            "channel":{
+                "note":{
+                }
+            }
+        }
+    },
+    "M-Audio_Oxygen_88":{
+        "state":{
+            "channel":{
+                "2":{
+                    "note":{
+                        "74":0,
+                        "71":0,
+                        "91":0,
+                        "93":0,
+                        "73":0,
+                        "72":0,
+                        "5":0,
+                        "84":0,
+                        "7":0,
+                    }
+                }
+            }
+        }
+    }
 }
 
 outputs = {
