@@ -28,7 +28,7 @@ block = 65535
 bass = 65535
 brush = 65535
 
-PAUSE_TIME = 0.005
+PAUSE_TIME = 0.5
 
 FPGA_ON = 0
 FPGA_OFF = 65535
