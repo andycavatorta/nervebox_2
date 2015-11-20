@@ -33,7 +33,7 @@ PAUSE_TIME = 0.005
 BASS_BANG_MODULE_ID = 23
 BLOCK_BANG_MODULE_ID = 22
 BONGO_BANG_MODULE_ID = 21
-BONGO_BANG_MODULE_ID = 24
+BRUSH_BANG_MODULE_ID = 24
 BRUSH_DAMPER_MODULE_ID = 25
 SNARE_BANG_MODULE_ID = 20
 
@@ -93,10 +93,10 @@ def sound_bongo_off(params):
     duplexPort.send(BONGO_DRONE_MODULE_ID,clock) 
 def sound_brush_bang(params):
     global brush
-    duplexPort.send(BONGO_DAMPER_MODULE_ID,65535)
-    duplexPort.send(BONGO_BANG_MODULE_ID,0)
+    duplexPort.send(BRUSH_DAMPER_MODULE_ID,65535)
+    duplexPort.send(BRUSH_BANG_MODULE_ID,0)
     time.sleep(PAUSE_TIME)
-    duplexPort.send(BONGO_BANG_MODULE_ID,65535)
+    duplexPort.send(BRUSH_BANG_MODULE_ID,65535)
 def sound_brush_pitch(params):
     global clock0, clock1, clock2
     clock = int(clock0 + clock1 + clock2/2)
