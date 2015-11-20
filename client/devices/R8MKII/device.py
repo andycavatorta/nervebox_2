@@ -107,6 +107,8 @@ def sound_31_bang(params):
     midi_out.send(mido.Message('note_on', channel = 0, note=97, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 
+def sound_off(params):
+    pass
 
 def system_power_on(params):
     pass
