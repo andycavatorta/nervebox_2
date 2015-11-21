@@ -530,6 +530,8 @@ test1 = {
     "M-Audio_Oxygen_88":{
         "1":{ # channel
             "9":{#note on
+                "34":["MRQ","/system/clock/source/toggle",["velocity"]],
+                "37":["MRQ","/system/power/toggle",["velocity"]],
                 "33":["MRQ","/sound/bass/bang",["velocity"]],
                 "35":["MRQ","/sound/snare/bang",["velocity"]],
                 "36":["MRQ","/sound/block/bang",["velocity"]],
@@ -541,7 +543,7 @@ test1 = {
                 "45":["MRQ","/sound/block/pitch",["velocity"]],
                 "47":["MRQ","/sound/bongo/pitch",["velocity"]],
                 "48":["MRQ","/sound/brush/pitch",["velocity"]],
-
+                
                 "50":["HR16","/sound/kick/bang",["velocity"]],
                 "52":["HR16","/sound/snare/bang",["velocity"]],
                 "53":["HR16","/sound/tom_1/bang",["velocity"]],

@@ -110,7 +110,6 @@ def sound_snare_off(params):
 def system_clock_1_set(params):
     global clock0, clock1, clock2
     v = int(params["dynamics"]["amplitude"]*127) / 4
-    print "params=", repr(params)
     clock0 = v << 11
     fpgaValue = int((clock0 + clock1 + clock2)/2)
     #fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
@@ -140,11 +139,13 @@ def system_power_toggle(params):
     power = FPGA_ON if power==FPGA_OFF else FPGA_OFF
     duplexPort.send(POWER_TOGGLE_MODULE_ID,power)
 def system_volume_set(params):
-    global volume
+    #global volume
+    print "params=", repr(params)
     fpgaValue = int(params["dynamics"]["amplitude"]*100) << 9
     duplexPort.send(VOLUME_MODULE_ID,fpgaValue/2)
 def system_balance_set(params):
-    global volume
+    #global volume
+    print "params=", repr(params)
     fpgaValue = int(params["dynamics"]["amplitude"]*100) << 9
     duplexPort.send(BALANCE_MODULE_ID,fpgaValue/2)
 def system_miditest_start(params):
