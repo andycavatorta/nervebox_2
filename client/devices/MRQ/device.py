@@ -53,84 +53,67 @@ VOLUME_MODULE_ID = 40
 BALANCE_MODULE_ID = 40
 
 def sound_bass_bang(params):
-    global bass
-    bass = 0
-    #bass = 0 if bass > 0 else 65535
-    duplexPort.send(BASS_BANG_MODULE_ID,bass)
+    duplexPort.send(BASS_BANG_MODULE_ID,FPGA_ON)
     time.sleep(PAUSE_TIME)
-    bass = 65535 # loop around
-    duplexPort.send(BASS_BANG_MODULE_ID,bass)
+    duplexPort.send(BASS_BANG_MODULE_ID,FPGA_OFF)
 def sound_bass_pitch(params):
     global clock0, clock1, clock2
     clock = int(clock0 + clock1 + clock2/2)
     duplexPort.send(BASS_DRONE_MODULE_ID,clock) 
 def sound_bass_off(params):
-    #clock = 0
-    #duplexPort.send(BASS_DRONE_MODULE_ID,clock) 
-    bass = 65535 # loop around
-    duplexPort.send(BASS_BANG_MODULE_ID,bass)
+    duplexPort.send(BASS_DRONE_MODULE_ID,FPGA_OFF) 
+    duplexPort.send(BASS_BANG_MODULE_ID,FPGA_OFF)
 def sound_block_bang(params):
-    global block
-    block = 0 if block > 0 else 65535
-    duplexPort.send(BLOCK_BANG_MODULE_ID,block)
+    duplexPort.send(BLOCK_BANG_MODULE_ID,FPGA_ON)
     time.sleep(PAUSE_TIME)
-    block = 0 if block > 0 else 65535 # loop around
-    duplexPort.send(BLOCK_BANG_MODULE_ID,block)
+    duplexPort.send(BLOCK_BANG_MODULE_ID,FPGA_OFF)
 def sound_block_pitch(params):
     global clock0, clock1, clock2
     clock = int(clock0 + clock1 + clock2/2)
     duplexPort.send(BLOCK_DRONE_MODULE_ID,clock) 
 def sound_block_off(params):
-    clock = 0
-    duplexPort.send(BLOCK_DRONE_MODULE_ID,clock) 
+    duplexPort.send(BLOCK_BANG_MODULE_ID,FPGA_OFF)
+    duplexPort.send(BLOCK_DRONE_MODULE_ID,FPGA_OFF) 
 def sound_bongo_bang(params):
-    global bongo
-    bongo = 0 if bongo > 0 else 65535
-    duplexPort.send(BONGO_BANG_MODULE_ID,bongo)
+    duplexPort.send(BONGO_BANG_MODULE_ID,FPGA_ON)
     time.sleep(PAUSE_TIME)
-    bongo = 0 if bongo > 0 else 65535 # loop around
-    duplexPort.send(BONGO_BANG_MODULE_ID,bongo)
+    duplexPort.send(BONGO_BANG_MODULE_ID,FPGA_OFF)
 def sound_bongo_pitch(params):
     global clock0, clock1, clock2
     clock = int(clock0 + clock1 + clock2/2)
     duplexPort.send(BONGO_DRONE_MODULE_ID,clock) 
 def sound_bongo_off(params):
-    clock = 0
-    duplexPort.send(BONGO_DRONE_MODULE_ID,clock) 
+    duplexPort.send(BONGO_DRONE_MODULE_ID,FPGA_OFF)
+    duplexPort.send(BONGO_BANG_MODULE_ID,FPGA_OFF) 
 def sound_brush_bang(params):
-    global brush
-    duplexPort.send(BRUSH_DAMPER_MODULE_ID,65535)
-    duplexPort.send(BRUSH_BANG_MODULE_ID,0)
+    duplexPort.send(BRUSH_DAMPER_MODULE_ID,FPGA_OFF)
+    duplexPort.send(BRUSH_BANG_MODULE_ID,FPGA_ON)
     time.sleep(PAUSE_TIME)
-    duplexPort.send(BRUSH_BANG_MODULE_ID,65535)
+    duplexPort.send(BRUSH_BANG_MODULE_ID,FPGA_OFF)
 def sound_brush_pitch(params):
     global clock0, clock1, clock2
     clock = int(clock0 + clock1 + clock2/2)
     duplexPort.send(BRUSH_DRONE_MODULE_ID,clock) 
 def sound_brush_off(params):
-    duplexPort.send(BRUSH_BANG_MODULE_ID,65535)
-    duplexPort.send(BRUSH_DAMPER_MODULE_ID,0)
-    duplexPort.send(BRUSH_DRONE_MODULE_ID,0) 
+    duplexPort.send(BRUSH_DAMPER_MODULE_ID,FPGA_ON)
+    duplexPort.send(BRUSH_DRONE_MODULE_ID,FPGA_OFF) 
 def sound_snare_bang(params):
-    global snare
-    snare = 0 if snare > 0 else 65535
-    duplexPort.send(SNARE_BANG_MODULE_ID,snare)
+    duplexPort.send(SNARE_BANG_MODULE_ID,FPGA_ON)
     time.sleep(PAUSE_TIME)
-    snare = 0 if snare > 0 else 65535 # loop around
-    duplexPort.send(SNARE_BANG_MODULE_ID,snare)
+    duplexPort.send(SNARE_BANG_MODULE_ID,FPGA_OFF)
 def sound_snare_pitch(params):
     global clock0, clock1, clock2
     clock = int(clock0 + clock1 + clock2/2)
     duplexPort.send(SNARE_DRONE_MODULE_ID,clock) 
 def sound_snare_off(params):
-    clock = 0
-    duplexPort.send(SNARE_DRONE_MODULE_ID,clock) 
+    duplexPort.send(SNARE_DRONE_MODULE_ID,FPGA_OFF) 
 def system_clock_1_set(params):
     global clock0, clock1, clock2
     v = int(params["dynamics"]["amplitude"]*127) / 4
     clock0 = v << 11
     fpgaValue = int((clock0 + clock1 + clock2)/2)
     fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
+    print "fpgaValue",fpgaValue
     duplexPort.send(CLOCK_MODULE_ID,fpgaValue)
 def system_clock_2_set(params):
     global clock0, clock1, clock2
@@ -138,20 +121,22 @@ def system_clock_2_set(params):
     clock1 = v << 6
     fpgaValue = int((clock0 + clock1 + clock2)/2)
     fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
+    print "fpgaValue",fpgaValue
     duplexPort.send(CLOCK_MODULE_ID,fpgaValue)
 def system_clock_3_set(params):
     global clock0, clock1, clock2
     clock2 = int(params["dynamics"]["amplitude"]*127) / 2
     fpgaValue = int((clock0 + clock1 + clock2)/2)
     fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
+    print "fpgaValue",fpgaValue
     duplexPort.send(CLOCK_MODULE_ID,fpgaValue)
 def system_clock_source_toggle(params):
     global externalClock
-    externalClock = 0 if externalClock>0 else 65535
+    externalClock = FPGA_ON if externalClock==FPGA_OFF else FPGA_OFF
     duplexPort.send(CLOCK_SOURCE_ID,externalClock)
 def system_power_toggle(params):
     global power
-    power = 0 if power>0 else 65535
+    power = FPGA_ON if power==FPGA_OFF else FPGA_OFF
     duplexPort.send(POWER_TOGGLE_MODULE_ID,power)
 def system_volume_set(params):
     global volume
