@@ -141,12 +141,12 @@ def system_power_toggle(params):
 def system_volume_set(params):
     #global volume
     print "params=", repr(params)
-    fpgaValue = int(params["dynamics"]["amplitude"]*100) << 9
+    fpgaValue = int(params["dynamics"]["amplitude"]*127)# << 9
     duplexPort.send(VOLUME_MODULE_ID,fpgaValue/2)
 def system_balance_set(params):
     #global volume
     print "params=", repr(params)
-    fpgaValue = int(params["dynamics"]["amplitude"]*100) << 9
+    fpgaValue = int(params["dynamics"]["amplitude"]*127)# << 9
     duplexPort.send(BALANCE_MODULE_ID,fpgaValue/2)
 def system_miditest_start(params):
     pass
