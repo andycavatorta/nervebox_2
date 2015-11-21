@@ -103,7 +103,7 @@ class Mappings():
             print deviceName, cmd, channel, note, velocity
             m = self.mapping[deviceName][str(channel)][str(cmd)][str(note)]
             x_params = m[2]
-            d = self.makeDynamics(velocity) if "velocity" in x_params and cmd==9 else self.makeDynamics(0)
+            d = self.makeDynamics(velocity) if "velocity" in x_params else self.makeDynamics(0)
             p = self.makePitch(note) if "pitch" in x_params else {}
             t = self.makeTimbre() if "timbre" in x_params else {}
             payload_d = {'dynamics':d,'pitch':p,'timbre':t}
