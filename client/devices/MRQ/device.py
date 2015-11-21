@@ -112,7 +112,7 @@ def system_clock_1_set(params):
     v = int(params["dynamics"]["amplitude"]*127) / 4
     clock0 = v << 11
     fpgaValue = int((clock0 + clock1 + clock2)/2)
-    fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
+    #fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
     print "fpgaValue",fpgaValue
     duplexPort.send(CLOCK_MODULE_ID,fpgaValue)
 def system_clock_2_set(params):
@@ -120,14 +120,14 @@ def system_clock_2_set(params):
     v = int(params["dynamics"]["amplitude"]*127) / 4
     clock1 = v << 6
     fpgaValue = int((clock0 + clock1 + clock2)/2)
-    fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
+    #fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
     print "fpgaValue",fpgaValue
     duplexPort.send(CLOCK_MODULE_ID,fpgaValue)
 def system_clock_3_set(params):
     global clock0, clock1, clock2
     clock2 = int(params["dynamics"]["amplitude"]*127) / 2
     fpgaValue = int((clock0 + clock1 + clock2)/2)
-    fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
+    #fpgaValue = fpgaValue if fpgaValue > 0 else fpgaValue +1 # what is this shit?
     print "fpgaValue",fpgaValue
     duplexPort.send(CLOCK_MODULE_ID,fpgaValue)
 def system_clock_source_toggle(params):
