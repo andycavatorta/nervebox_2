@@ -88,8 +88,8 @@ def sound_bongo_off(params):
 def sound_brush_bang(params):
     duplexPort.send(BRUSH_DAMPER_MODULE_ID,FPGA_OFF)
     duplexPort.send(BRUSH_BANG_MODULE_ID,FPGA_ON)
-    time.sleep(PAUSE_TIME)
-    duplexPort.send(BRUSH_BANG_MODULE_ID,FPGA_OFF)
+    #time.sleep(PAUSE_TIME)
+    #duplexPort.send(BRUSH_BANG_MODULE_ID,FPGA_OFF)
 def sound_brush_pitch(params):
     global clock0, clock1, clock2
     clock = int(clock0 + clock1 + clock2/2)
