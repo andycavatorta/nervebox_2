@@ -102,6 +102,7 @@ class Mappings():
         try:
             print deviceName, cmd, channel, note, velocity
             m = self.mapping[deviceName][str(channel)][str(cmd)][str(note)]
+            print m
             x_params = m[2]
             d = self.makeDynamics(velocity) if "velocity" in x_params else self.makeDynamics(0)
             p = self.makePitch(note) if "pitch" in x_params else {}
@@ -113,7 +114,7 @@ class Mappings():
         except Exception, e:
             pass
             #traceback.print_exc()
-            #print "exception in mapMIDIToNerveOSC.Mappings.input:", deviceName, cmd, channel, note, velocity, e
+            print "exception in mapMIDIToNerveOSC.Mappings.input:", deviceName, cmd, channel, note, velocity, e
 
 inputs = {
     "Alesis_Q25":None,
@@ -498,7 +499,7 @@ outputs = {
 }
 
 test1 = {
-    "Alesis_Q25":{
+    "0582_0009":{
         "0":{ # channel
             "9":{#note on
                 "48":["TR505","/sound/bass_drum/bang",["velocity"]],
@@ -527,7 +528,7 @@ test1 = {
             }
         }
     },
-    "M-Audio_Oxygen_88":{
+    "____":{
         "1":{ # channel
             "9":{#note on
                 "34":["MRQ","/system/clock/source/toggle",["velocity"]],
