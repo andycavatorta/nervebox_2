@@ -526,9 +526,7 @@ test1 = {
             "8":{#note off
 
             }
-        }
-    },
-    "____":{
+        },
         "1":{ # channel
             "9":{#note on
                 "34":["MRQ","/system/clock/source/toggle",["velocity"]],
