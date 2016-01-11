@@ -76,8 +76,9 @@ callerSend = discovery.init_caller(
 deviceNames = filter(lambda x: os.path.isdir(os.path.join(DEVICES_PATH, x)), os.listdir(DEVICES_PATH))
 
 def midiEventCallback(devicename, msgAndTime_t, data=None):
+    print "vimina/main midiEventCallback", devicename, msgAndTime_t, data
     msg, deltatime = msgAndTime_t
-    osc_msg = midiToOsc.convert(devicename, msg, data) # convert MIDI so OSC
+    osc_msg = midiToOsc.convert(devicename, msg) # convert MIDI so OSC
     print osc_msg
     pubsub_api.publish("osc", osc_msg)
     # send to nervebox server  duplexSockets_send(osc)
