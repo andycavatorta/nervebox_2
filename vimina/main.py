@@ -86,7 +86,7 @@ def midiEventCallback(devicename, msgAndTime_t, data=None):
 def createVirtualPort(devicename):
     midiin = rtmidi.MidiIn()
     vp = midiin.open_virtual_port(devicename)
-    midiin.set_callback((lambda event, data: handleCallback(devicename, event, data)))
+    midiin.set_callback((lambda event, data: midiEventCallback(devicename, event, data)))
     return vp
 
 virtualPorts = map(createVirtualPort, deviceNames)
