@@ -1,0 +1,14 @@
+{
+	"discovery_multicastGroup": "224.0.0.1",
+	"discovery_multicastPort": 10000,
+	"discovery_responsePort": 10001,
+	"pubsub_pubPort": 10002,
+	"duplexSockets_devicePort": 50000,
+	"duplexSockets_serverPort": 50000,
+	"hardwareGatewayNetworkManager_clientPort": 50000,
+	"to_field":"andycavatorta@gmail.com",
+	"from_field":"simurghnodes@gmail.com",
+	"password_field":"5ed0n6rum15",
+	"SMTP_field":"smtp.gmail.com",
+	"SMTP_port":587
+}
