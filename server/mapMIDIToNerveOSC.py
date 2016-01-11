@@ -1,7 +1,11 @@
 """
 This module create receives MIDI message
 
+inputs to nervebox
+/origin/subsystem/verb {params}
 
+outputs from nervebox
+/destination/subsystem/verb {params}
 
 
 mapping operations:

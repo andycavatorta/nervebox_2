@@ -3,6 +3,12 @@
 
 
 """
+
+
+#############################################
+##### MODULES, EVENIRONMENT AND GLOBALS #####
+#############################################
+
 import json
 import os
 import struct
@@ -40,7 +46,42 @@ with open(COMMON_PATH + 'settings.json', 'r') as f:
 
 device.init()
 
-# SET UP NETWORKING
+
+######################
+##### NETWORKING #####
+######################
+
+
+subscribernames = ["nervebox"]
+
+def recvCallback(topic, msg):
+    # there is not yet a reason for nervebox to publish to vimina
+    print "recvCallback", repr(topic), repr(msg)
+    device.handleNOSC(nerveOSC.parse(msg))
+
+def netStateCallback(hostname, connected):
+    print "netStateCallback", hostname, connected
+    callerSend.setServerFound(connected)
+
+def serverFoundCallback(msg):
+    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__"))
+
+pubsub_api = pubsub.init(
+    subscribernames,
+    HOSTNAME, 
+    SETTINGS["pubsub_pubPort"], 
+    recvCallback,
+    netStateCallback
+)
+
+callerSend = discovery.init_caller(
+    SETTINGS["discovery_multicastGroup"], 
+    SETTINGS["discovery_multicastPort"],
+    SETTINGS["discovery_responsePort"],
+    serverFoundCallback
+)
+
+"""
 def duplexSockets_handleMessages(msg):
     #print "------------", nerveOSC.parse(msg)
     print "duplexPort_handleMessages", msg
@@ -70,5 +111,4 @@ discovery.init_caller(
     CONFIG["discovery_responsePort"],
     discovery_handleServerFound
 )
-
-
+"""

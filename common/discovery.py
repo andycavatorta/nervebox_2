@@ -27,6 +27,7 @@ class Responder(threading.Thread):
         self.mreq = struct.pack("4sl", socket.inet_aton(listener_grp), socket.INADDR_ANY)
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, self.mreq)
     def response(self, remoteIP, msg_json): # response sends the local IP to the remote device
+        #print "Responder.response",remoteIP,self.response_port, msg_json
         context = zmq.Context()
         socket = context.socket(zmq.PAIR)
         socket.connect("tcp://%s:%s" % (remoteIP,self.response_port))
@@ -39,12 +40,15 @@ class Responder(threading.Thread):
                 print "Event: Device Discovered:",msg_json
                 remoteIP = msg_d["ip"]
                 resp_d = self.callback(msg_d)
-                resp_json = json.dumps(resp_d)
+                resp_json = json.dumps( {"ip":self.localIP,"hostname":socket.gethostname()})
+                #print "resp_json=", resp_json
+                #self.response(remoteIP,self.localIP)
                 self.response(remoteIP,resp_json)
             #except Exception as e:
             #    print "Exception in dynamicDiscovery.server.Discovery: %s" % (repr(e))
 
 def init_responder(listener_grp, listener_port, response_port, callback):
+    print "listening for multicast on port" , listener_port, "in multicast group", listener_grp
     responder = Responder(
         listener_grp,
         listener_port, 
@@ -67,12 +71,14 @@ class CallerSend(threading.Thread):
         self.msg_d = {"ip":localIP,"hostname":localHostname}
         self.msg_json = json.dumps(self.msg_d)
         self.mcast_msg = self.msg_json
-        self.serverNotFound = True
+        self.serverFound_b = False
     def setServerFound(self,b):
-        self.serverNotFound = b
+        self.serverFound_b = b
     def run(self):
-        while self.serverNotFound:
-            self.mcast_sock.sendto(self.mcast_msg, (self.mcast_grp, self.mcast_port))
+        while True:
+            if not self.serverFound_b:
+                print "calling to",self.mcast_grp, self.mcast_port
+                self.mcast_sock.sendto(self.mcast_msg, (self.mcast_grp, self.mcast_port))
             time.sleep(5)
 
 class CallerRecv(threading.Thread):
@@ -83,14 +89,18 @@ class CallerRecv(threading.Thread):
         self.listen_context = zmq.Context()
         self.listen_sock = self.listen_context.socket(zmq.PAIR)
         self.listen_sock.bind("tcp://*:%d" % recv_port)
+        print "CallerRecv listening on port %d" % (recv_port)
     def run(self):
+        #print "CallerRecv run"
         msg_json = self.listen_sock.recv()
+        #print ">>>>>>>>>>", msg_json
         msg_d = json.loads(msg_json)
         self.callback(msg_d)
         # to do: test the connection
-        self.callerSend.setServerFound(False)
+        self.callerSend.setServerFound(True)
 
 def init_caller(mcast_grp, mcast_port, recv_port, callback):
+    print "calling port" , mcast_port, "in multicast group", mcast_grp
     callerSend = CallerSend(
         socket.gethostname(), 
         getLocalIP(), 
@@ -104,3 +114,5 @@ def init_caller(mcast_grp, mcast_port, recv_port, callback):
     )
     callerRecv.start()
     callerSend.start()
+    return callerSend
+
