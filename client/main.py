@@ -36,7 +36,7 @@ sys.path.append(HOST_SPECIFIC_PATH)
 
 # import local modules
 import discovery
-import duplexSockets
+import pubsub
 import nerveOSC
 import device
 
