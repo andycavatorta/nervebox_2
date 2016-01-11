@@ -1,4 +1,6 @@
 
+import json
+
 statusMap = {
     128:"note_off",
     144:"note_on",

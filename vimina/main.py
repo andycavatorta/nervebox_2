@@ -80,7 +80,7 @@ def midiEventCallback(devicename, msgAndTime_t, data=None):
     msg, deltatime = msgAndTime_t
     osc_msg = midiToOsc.convert(devicename, msg) # convert MIDI so OSC
     print osc_msg
-    pubsub_api.publish("osc", osc_msg)
+    pubsub_api["publish"]("osc", osc_msg)
     # send to nervebox server  duplexSockets_send(osc)
 
 # following MIDI functions should be moved into common module
