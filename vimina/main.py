@@ -77,7 +77,7 @@ deviceNames = filter(lambda x: os.path.isdir(os.path.join(DEVICES_PATH, x)), os.
 
 def midiEventCallback(devicename, msgAndTime_t, data=None):
     msg, deltatime = msgAndTime_t
-    osc_msg = midiToOSC.convert(devicename, msg, data) # convert MIDI so OSC
+    osc_msg = midiToOsc.convert(devicename, msg, data) # convert MIDI so OSC
     print osc_msg
     pubsub_api.publish("osc", osc_msg)
     # send to nervebox server  duplexSockets_send(osc)
