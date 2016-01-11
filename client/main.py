@@ -42,7 +42,7 @@ import device
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:
-    CONFIG = json.load(f)
+    SETTINGS = json.load(f)
 
 device.init()
 
