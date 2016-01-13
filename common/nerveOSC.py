@@ -14,7 +14,7 @@ import json
 import socket
 
 def parse(nerveOSC_str):
-	path_str, params_j = nerveOSC_str.split(" ")
+	path_str, params_j = nerveOSC_str.split(" ", 1)
 	path_l = path_str.split("/")
 	return {
 		"host":path_l[0],

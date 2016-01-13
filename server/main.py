@@ -136,10 +136,12 @@ def mapOscInToOscOut(osc):
       oscOutPath = MAPPING["INPUTDEVICES"][device]["CHANNEL"][params['channel']]["PITCH_12TET"][params["pitch"]["12tet"]]["COMMAND"][command]
       oscOut = "%s %s"%(oscOutPath,params_str)
       print oscOut
-      pubsub_api["publish"]("osc", oscOut)
+      pubsub_api["publish"]("osc", '/HR16/sound/tom_3/bang {"timbre": null, "dynamics": {"amplitude": 0.5196850393700787}, "channel": "1", "pitch": {"midi": 57, "cents": 0, "12tet": "A3", "octave": 3, "pitch": "A", "freq": 220.0}}')
+      #pubsub_api["publish"]("osc", oscOut)
     except Exception as e:
       print "mapping not found", osc
   #print repr(MAPPINGS["MAPPINGS"]["default"])
+
 
 
 

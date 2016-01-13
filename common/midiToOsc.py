@@ -265,5 +265,5 @@ def convert(devicename, status, channel, data1=None, data2=None):
             "value":data2
         }
 
-    params_j = json.dumps(params)
+    params_j = json.dumps(params, separators=(',', ':'))
     return "/%s/%s %s" % (devicename,status, params_j)
