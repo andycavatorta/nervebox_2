@@ -55,7 +55,6 @@ device.init()
 subscribernames = ["nervebox"]
 
 def recvCallback(topic, msg):
-    # there is not yet a reason for nervebox to publish to vimina
     print "recvCallback", repr(topic), repr(msg)
     device.handleNOSC(nerveOSC.parse(msg))
 
