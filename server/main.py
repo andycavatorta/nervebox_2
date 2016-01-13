@@ -12,7 +12,7 @@ It
 #############################################
 
 import json
-import mapMIDIToNerveOSC
+#import mapMIDIToNerveOSC
 import os
 import socket
 import struct
@@ -38,12 +38,18 @@ sys.path.append(SERVER_PATH)
 import discovery
 #import duplexSockets
 import pubsub
-import nerveOSC
+import parseOsc
+import midiToOsc
 import midiDeviceManager
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:
     SETTINGS = json.load(f)
+
+with open(COMMON_PATH + 'mappings.json', 'r') as f:
+    MAPPINGS = json.load(f)
+
+MAPPING = MAPPINGS["MAPPINGS"]["default"] # todo: the mapping name will have to be dynamically updated
 
 ######################
 ##### NETWORKING #####
@@ -61,7 +67,7 @@ def netStateCallback(hostname, connected):
   print "netStateCallback", hostname, connected
 
 def handleSubscriberFound(msg):
-  pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__"))
+  pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__","osc"))
 
 pubsub_api = pubsub.init(
   subscribernames,
@@ -79,10 +85,11 @@ discovery.init_responder(
   handleSubscriberFound
 )
 
-######################
-##### NETWORKING #####
-######################
+###########################################
+##### MIDI DEVICES ATTACHED TO SERVER #####
+###########################################
 
+"""
 # SET UP Mapping to NerveOSC
 def nerveOSCRouter(nosc):
     nosc_d = nerveOSC.parse(nosc)
@@ -90,16 +97,49 @@ def nerveOSCRouter(nosc):
     hosts.routeMessageToHost(nosc_d["host"],nosc)
 
 mapMIDIToNerveOSC.init("test1", nerveOSCRouter, STORE_PATH)
+"""
 
 # SET UP MIDI
 def deviceCallback(eventType, deviceID, deviceName):
     print "deviceCallback", eventType, deviceID, deviceName
 
-def midiCallback(deviceName, cmd, channel, note, velocity):
-    print "midiCallback", deviceName, cmd, channel, note, velocity
+statusMap = {
+    8:"note_off",
+    9:"note_on",
+    10:"polyphonic_aftertouch",
+    11:"control_change",
+    12:"program_change",
+    13:"channel_aftertouch",
+    14:"pitch_wheel",
+    15:"system_exclusive"
+}
 
-midiDeviceManager.init(deviceCallback, mapMIDIToNerveOSC.midiIn)
+def midiCallback(devicename, cmd, channel, note, velocity):
+    #print "midiCallback", devicename, cmd, channel, note, velocity
+    cmd = statusMap[int(cmd)]
+    osc_msg = midiToOsc.convert(devicename, cmd, channel, note, velocity) # convert MIDI so OSC
+    #print "midiCallback", osc_msg
+    mapOscInToOscOut(osc_msg)
 
+midiDeviceManager.init(deviceCallback, midiCallback)
+
+#################################
+##### MAP OSC IN TO OSC OUT #####
+#################################
+
+def mapOscInToOscOut(osc):
+  print osc
+  [device, command, params, params_str] = parseOsc.parse(osc)
+
+  if command in ["note_on", "note_off"]:
+    try:
+      oscOutPath = MAPPING["INPUTDEVICES"][device]["CHANNEL"][params['channel']]["PITCH_12TET"][params["pitch"]["12tet"]]["COMMAND"][command]
+      oscOut = "%s %s"%(oscOutPath,params_str)
+      print oscOut
+      pubsub_api["publish"]("osc", oscOut)
+    except Exception as e:
+      print "mapping not found", osc
+  #print repr(MAPPINGS["MAPPINGS"]["default"])
 
 
 

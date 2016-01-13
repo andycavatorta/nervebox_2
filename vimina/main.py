@@ -52,7 +52,7 @@ def netStateCallback(hostname, connected):
     callerSend.setServerFound(connected)
 
 def serverFoundCallback(msg):
-    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__"))
+    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__","osc"))
 
 pubsub_api = pubsub.init(
     subscribernames,
@@ -75,13 +75,55 @@ callerSend = discovery.init_caller(
 
 deviceNames = filter(lambda x: os.path.isdir(os.path.join(DEVICES_PATH, x)), os.listdir(DEVICES_PATH))
 
+
+statusMap = {
+    128:"note_off",
+    144:"note_on",
+    160:"polyphonic_aftertouch",
+    176:"control_change",
+    192:"program_change",
+    208:"channel_aftertouch",
+    224:"pitch_wheel",
+    240:"system_exclusive",
+    241:"system_common",
+    242:"song_position_pointer",
+    243:"song_select",
+    244:"system_common",
+    245:"system_common",
+    246:"tune_request",
+    247:"end_of_sysex",
+    248:"timing_clock",
+    249:"undefined",
+    250:"start",
+    251:"continue",
+    252:"stop",
+    253:"undefined",
+    254:"active_sensing",
+    255:"sys_reset",
+}
+
 def midiEventCallback(devicename, msgAndTime_t, data=None):
     print "vimina/main midiEventCallback", devicename, msgAndTime_t, data
-    msg, deltatime = msgAndTime_t
-    osc_msg = midiToOsc.convert(devicename, msg) # convert MIDI so OSC
+    event, deltatime = msgAndTime_t
+
+
+    if event[0] < 0xF0:
+        channel = (event[0] & 0xF) + 1
+        status_int = event[0] & 0xF0
+    else:
+        status_int = event[0]
+        channel = None
+    status = statusMap[int(status_int)]
+    data1 = data2 = None
+    num_bytes = len(event)
+    if num_bytes >= 2:
+        data1 = event[1]
+    if num_bytes >= 3:
+        data2 = event[2]
+
+    osc_msg = midiToOsc.convert(devicename, status, channel, data1, data2) # convert MIDI so OSC
     print osc_msg
     pubsub_api["publish"]("osc", osc_msg)
-    # send to nervebox server  duplexSockets_send(osc)
 
 # following MIDI functions should be moved into common module
 def createVirtualPort(devicename):

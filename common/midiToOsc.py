@@ -1,5 +1,6 @@
 
 import json
+import math
 
 statusMap = {
     128:"note_off",
@@ -159,17 +160,23 @@ ccMap = {
 }
 
 def makePitch(midiNoteNumber, cents_int=0):
+    pitch = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"][midiNoteNumber%12]
+    octave = int(math.floor(midiNoteNumber/12)-1)
+    
+
     return {
-        'pitch':["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"][midiNoteNumber%12],
-        'octave':math.floor(midiNoteNumber/12)-1,
+        'pitch':pitch,
+        'octave':octave,
         'cents':cents_int,
-        'freq':440.0 * (2.0**((midiNoteNumber-69+cents_int)/12.0)),
+        '12tet':"%s%d"%(pitch,octave),
+        'freq':round(440.0 * (2.0**((midiNoteNumber-69+cents_int)/12.0)),3),
         'midi':midiNoteNumber
     }
 
-def convert(devicename, event):
-
+def convert(devicename, status, channel, data1=None, data2=None):
+    
     #### PARSE MIDI ####
+    """
     if event[0] < 0xF0:
         channel = (event[0] & 0xF) + 1
         status_int = event[0] & 0xF0
@@ -183,11 +190,16 @@ def convert(devicename, event):
         data1 = event[1]
     if num_bytes >= 3:
         data2 = event[2]
+    """
+
     if status in ["note_off","note_on","polyphonic_aftertouch","channel_aftertouch"]:
         data1 = makePitch(data1)
     if status == "control_change":
         data1 = [data1, ccMap[data1]]
 
+    channel = str(channel)
+    #data1 = str(data1)
+    #data2 = str(data2)
     #### CREATE OSC ####
     params = {
         "channel":channel, 
@@ -198,7 +210,8 @@ def convert(devicename, event):
         params = {
             "channel":channel,
             "pitch":data1,
-            "amplitude":data2
+            "dynamics":{"amplitude":data2/127.0},
+            "timbre":None
         }
     if status =="polyphonic_aftertouch":
         params = {
@@ -253,4 +266,4 @@ def convert(devicename, event):
         }
 
     params_j = json.dumps(params)
-    return "%s/%s %s" % (devicename,status, params_j)
+    return "/%s/%s %s" % (devicename,status, params_j)

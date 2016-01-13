@@ -2,6 +2,7 @@ import threading
 import time
 import zmq
 
+"""
 class PubSocket(threading.Thread):
     def __init__(self, port, heartbeatMsg):
         threading.Thread.__init__(self)
@@ -10,13 +11,25 @@ class PubSocket(threading.Thread):
         self.socket = self.context.socket(zmq.PUB)
         self.socket.bind("tcp://*:%s" % port)
     def send(self, topic, msg):
+        print "pubsub.py PubSocket.send", topic, msg
         self.socket.send("%s %s" % (topic, msg))   
     def run(self):
         while True:
             #print "send heartbeat"
             self.socket.send("%s %s" % ("__heartbeat__", self.heartbeatMsg))
-            time.sleep(.5)
+            time.sleep(1)
+"""
+HEARTBEAT = 1.0 # seconds
 
+class PubSocket():
+    def __init__(self, port):
+        self.port = port
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PUB)
+        self.socket.bind("tcp://*:%s" % port)
+    def send(self, topic, msg):
+        #print "pubsub.py PubSocket.send", self.port, topic, msg
+        self.socket.send("%s %s" % (topic, msg))   
 
 class Subscription():
     def __init__(self, hostname):
@@ -31,7 +44,7 @@ class Subscription():
     def getLastHeartbeat(self, lastHeartbeat):
         return self.lastHeartbeat
     def testConnection(self):
-        hb = self.lastHeartbeat + ( 5 * 1.0) > time.time() #if heartbeat is two beats stale
+        hb = self.lastHeartbeat + ( 3 * HEARTBEAT) > time.time() #if heartbeat is two beats stale
         if self.connected and not hb: # recently disconnected
             self.connected = False
             return False
@@ -43,7 +56,6 @@ class Subscription():
         self.ip = ip
         self.remotePort = remotePort
         self.connected = True
-
 
 class Subscriptions(threading.Thread):
     """ this class manages a zmq sub socket and code for tracking publishers' connect state using heartbeats """
@@ -98,16 +110,25 @@ class CheckHeartbeats(threading.Thread):
                     self.subscriptions_instance.netStateCallback(hostname, True)
                 if stat == False:
                     self.subscriptions_instance.netStateCallback(hostname, False)
-                time.sleep(1)
+                time.sleep(HEARTBEAT)
 
+def sendHeartbeats(pubsocket, heartbeatMsg):
+    while True:
+        #print "send heartbeat"
+        pubsocket.send("__heartbeat__", heartbeatMsg)
+        time.sleep(HEARTBEAT)
 
 def init(subscribersnames,localName, publish_port, recvCallback,netStateCallback):
-    pubsocket = PubSocket(publish_port, localName)
-    pubsocket.start()
+    #pubsocket = PubSocket(publish_port, localName)
+    #pubsocket.start()
+    pubsocket = PubSocket(publish_port)
     subscriptions = Subscriptions(subscribersnames, publish_port, recvCallback, netStateCallback)
     subscriptions.start()
     checkheartbeats = CheckHeartbeats(subscriptions)
     checkheartbeats.start()
+
+    t1 = threading.Thread(target=sendHeartbeats, args=(pubsocket, localName))
+    t1.start()
 
     return {
         "publish":pubsocket.send, # topic, msg
@@ -116,7 +137,6 @@ def init(subscribersnames,localName, publish_port, recvCallback,netStateCallback
     }
 
 """
-
 
 
 """
