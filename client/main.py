@@ -63,7 +63,7 @@ def netStateCallback(hostname, connected):
     callerSend.setServerFound(connected)
 
 def serverFoundCallback(msg):
-    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__", "osc"))
+    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__", HOSTNAME))
 
 pubsub_api = pubsub.init(
     subscribernames,

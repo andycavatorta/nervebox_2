@@ -89,17 +89,6 @@ discovery.init_responder(
 ##### MIDI DEVICES ATTACHED TO SERVER #####
 ###########################################
 
-"""
-# SET UP Mapping to NerveOSC
-def nerveOSCRouter(nosc):
-    nosc_d = nerveOSC.parse(nosc)
-    #print nosc #, nosc_d
-    hosts.routeMessageToHost(nosc_d["host"],nosc)
-
-mapMIDIToNerveOSC.init("test1", nerveOSCRouter, STORE_PATH)
-"""
-
-# SET UP MIDI
 def deviceCallback(eventType, deviceID, deviceName):
     print "deviceCallback", eventType, deviceID, deviceName
 
@@ -130,75 +119,12 @@ midiDeviceManager.init(deviceCallback, midiCallback)
 def mapOscInToOscOut(osc):
   print osc
   [device, command, params, params_str] = parseOsc.parse(osc)
-
   if command in ["note_on", "note_off"]:
     try:
-      oscOutPath = MAPPING["INPUTDEVICES"][device]["CHANNEL"][params['channel']]["PITCH_12TET"][params["pitch"]["12tet"]]["COMMAND"][command]
+      [oscOutDevice, oscOutPath] = MAPPING["INPUTDEVICES"][device]["CHANNEL"][params['channel']]["PITCH_12TET"][params["pitch"]["12tet"]]["COMMAND"][command]
       oscOut = "%s %s"%(oscOutPath,params_str)
-      print oscOut
-      pubsub_api["publish"]("osc", '/HR16/sound/tom_3/bang {"timbre": null, "dynamics": {"amplitude": 0.5196850393700787}, "channel": "1", "pitch": {"midi": 57, "cents": 0, "12tet": "A3", "octave": 3, "pitch": "A", "freq": 220.0}}')
-      #pubsub_api["publish"]("osc", oscOut)
+      #print oscOut
+      #pubsub_api["publish"]("osc", '/HR16/sound/tom_3/bang {"timbre":null,"dynamics":{"amplitude":0.5196850393700787},"channel":"1","pitch":{"midi":57,"cents":0,"12tet":"A3","octave":3,"pitch":"A","freq":220.0}}')
+      pubsub_api["publish"](oscOutDevice, oscOut)
     except Exception as e:
       print "mapping not found", osc
-  #print repr(MAPPINGS["MAPPINGS"]["default"])
-
-
-
-
-"""
-# SET UP NETWORKING
-
-class Hosts():
-    def __init__(self):
-        self.hosts = {}
-        self.nextPort = 50000
-        #self.hostnameXDevname_d
-    def addHost(self, msg_d):
-        msg_d["server_port"] = self.nextPort
-        self.nextPort += 1
-        print "addHost", msg_d
-        self.hosts[msg_d["hostname"]] = host = Host(msg_d["hostname"])
-        send = duplexSockets.init(
-            msg_d["ip"], 
-            CONFIG["duplexSockets_devicePort"],
-            msg_d["server_port"], 
-            "/%s/system/ping/" % msg_d["hostname"],
-            host.handleIncoming, 
-            host.handleOutgoingResponse,
-            host.handleException
-        )
-        host.setSend(send)
-        return msg_d
-    def removeHost(self, hostname):
-        return 
-    def routeMessageToHost(self,hostname,msg):
-        #print hostname, self.hosts
-        if self.hosts.has_key(hostname):
-            self.hosts[hostname].send(msg)
-        else:
-            print "main.Hosts.routeMessageToHost: host not connected:", hostname, msg
-
-hosts = Hosts()
-
-class Host():
-    def __init__(self, hostname):
-        self.hostname = hostname
-    def send(self, msg):
-        print "outgoing port not set up", msg
-    def handleIncoming(self, msg):
-        print "handleIncoming",self.hostname, msg
-    def handleOutgoingResponse(self, msg):
-        pass
-        #print "handleOutgoingResponse",self.hostname, msg
-    def handleException(self, msg):
-        print "handleException",self.hostname, msg
-    def setSend(self, func):
-        self.send = func
-
-discovery.init_responder(
-  CONFIG["discovery_multicastGroup"], 
-  CONFIG["discovery_multicastPort"],
-  CONFIG["discovery_responsePort"],
-  hosts.addHost # discovery_handleDeviceFound 
-)
-"""

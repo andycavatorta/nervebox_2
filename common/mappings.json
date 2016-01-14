@@ -8,98 +8,98 @@
                             "PITCH_12TET":{
                                 "D3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/kick/bang",
-                                        "note_off":"HR16/sound/kick/off"
+                                        "note_on":["HR16","/sound/kick/bang"],
+                                        "note_off":["HR16","/sound/kick/off"]
                                     }
                                 },
                                 "E3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/snare/bang",
-                                        "note_off":"HR16/sound/snare/off"
+                                        "note_on":["HR16","/sound/snare/bang"],
+                                        "note_off":["HR16","/sound/snare/off"]
                                     }
                                 },
                                 "F3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/tom_1/bang",
-                                        "note_off":"HR16/sound/tom_1/off"
+                                        "note_on":["HR16","/sound/tom_1/bang"],
+                                        "note_off":["HR16","/sound/tom_1/off"]
                                     }
                                 },
                                 "G3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/tom_2/bang",
-                                        "note_off":"HR16/sound/tom_2/off"
+                                        "note_on":["HR16","/sound/tom_2/bang"],
+                                        "note_off":["HR16","/sound/tom_2/off"]
                                     }
                                 },
                                 "A3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/tom_3/bang",
-                                        "note_off":"HR16/sound/tom_3/off"
+                                        "note_on":["HR16","/sound/tom_3/bang"],
+                                        "note_off":["HR16","/sound/tom_3/off"]
                                     }
                                 },
                                 "B3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/tom_4/bang",
-                                        "note_off":"HR16/sound/tom_4/off"
+                                        "note_on":["HR16","/sound/tom_4/bang"],
+                                        "note_off":["HR16","/sound/tom_4/off"]
                                     }
                                 },
                                 "C4":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/perc_1/bang",
-                                        "note_off":"HR16/sound/perc_1/off"
+                                        "note_on":["HR16","/sound/perc_1/bang"],
+                                        "note_off":["HR16","/sound/perc_1/off"]
                                     }
                                 },
                                 "D4":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/perc_2/bang",
-                                        "note_off":"HR16/sound/perc_2/off"
+                                        "note_on":["HR16","/sound/perc_2/bang"],
+                                        "note_off":["HR16","/sound/perc_2/off"]
                                     }
                                 },
                                 "E4":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/perc_3/bang",
-                                        "note_off":"HR16/sound/perc_3/off"
+                                        "note_on":["HR16","/sound/perc_3/bang"],
+                                        "note_off":["HR16","/sound/perc_3/off"]
                                     }
                                 },
                                 "F4":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/perc_4/bang",
-                                        "note_off":"HR16/sound/perc_4/off"
+                                        "note_on":["HR16","/sound/perc_4/bang"],
+                                        "note_off":["HR16","/sound/perc_4/off"]
                                     }
                                 },
                                 "G4":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/claps/bang",
-                                        "note_off":"HR16/sound/claps/off"
+                                        "note_on":["HR16","/sound/claps/bang"],
+                                        "note_off":["HR16","/sound/claps/off"]
                                     }
                                 },
                                 "F#3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/closed_hat/bang",
-                                        "note_off":"HR16/sound/closed_hat/off"
+                                        "note_on":["HR16","/sound/closed_hat/bang"],
+                                        "note_off":["HR16","/sound/closed_hat/off"]
                                     }
                                 },
                                 "G#3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/mid_hat/bang",
-                                        "note_off":"HR16/sound/mid_hat/off"
+                                        "note_on":["HR16","/sound/mid_hat/bang"],
+                                        "note_off":["HR16","/sound/mid_hat/off"]
                                     }
                                 },
                                 "A#3":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/open_hat/bang",
-                                        "note_off":"HR16/sound/open_hat/off"
+                                        "note_on":["HR16","/sound/open_hat/bang"],
+                                        "note_off":["HR16","/sound/open_hat/off"]
                                     }
                                 },
                                 "C#":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/ride/bang",
-                                        "note_off":"HR16/sound/ride/off"
+                                        "note_on":["HR16","/sound/ride/bang"],
+                                        "note_off":["HR16","/sound/ride/off"]
                                     }
                                 },
                                 "D#4":{
                                     "COMMAND":{
-                                        "note_on":"HR16/sound/crash/bang",
-                                        "note_off":"HR16/sound/crash/off"
+                                        "note_on":["HR16","/sound/crash/bang"],
+                                        "note_off":["HR16","/sound/crash/off"]
                                     }
                                 }
                             }

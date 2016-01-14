@@ -14,6 +14,10 @@ def getLocalIP():
     else:
         return eth0
 
+#####################
+##### RESPONDER #####
+#####################
+
 class Responder(threading.Thread):
     def __init__(self, listener_grp, listener_port, response_port, localIP, callback):
         threading.Thread.__init__(self)
@@ -26,12 +30,19 @@ class Responder(threading.Thread):
         self.sock.bind((listener_grp, listener_port))
         self.mreq = struct.pack("4sl", socket.inet_aton(listener_grp), socket.INADDR_ANY)
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, self.mreq)
+        self.IpTiming = {}
     def response(self, remoteIP, msg_json): # response sends the local IP to the remote device
         #print "Responder.response",remoteIP,self.response_port, msg_json
+        if self.IpTiming.has_key(remoteIP):
+            if self.IpTiming[remoteIP] + 6 > time.time():
+                return
+        else:
+            self.IpTiming[remoteIP] = time.time()
         context = zmq.Context()
         socket = context.socket(zmq.PAIR)
         socket.connect("tcp://%s:%s" % (remoteIP,self.response_port))
         socket.send(msg_json)
+        socket.close()
     def run(self):
         while True:
             #try:
@@ -42,7 +53,6 @@ class Responder(threading.Thread):
                 resp_d = self.callback(msg_d)
                 resp_json = json.dumps( {"ip":self.localIP,"hostname":socket.gethostname()})
                 #print "resp_json=", resp_json
-                #self.response(remoteIP,self.localIP)
                 self.response(remoteIP,resp_json)
             #except Exception as e:
             #    print "Exception in dynamicDiscovery.server.Discovery: %s" % (repr(e))
@@ -58,7 +68,10 @@ def init_responder(listener_grp, listener_port, response_port, callback):
     )
     responder.start()
 
-# -----------------------------------
+
+##################
+##### CALLER #####
+##################
 
 class CallerSend(threading.Thread):
     def __init__(self, localHostname, localIP, mcast_grp, mcast_port):
@@ -98,6 +111,11 @@ class CallerRecv(threading.Thread):
         self.callback(msg_d)
         # to do: test the connection
         self.callerSend.setServerFound(True)
+
+
+#####################
+##### INIT #####
+#####################
 
 def init_caller(mcast_grp, mcast_port, recv_port, callback):
     print "calling port" , mcast_port, "in multicast group", mcast_grp

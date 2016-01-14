@@ -29,7 +29,7 @@ class PubSocket():
         self.socket.bind("tcp://*:%s" % port)
     def send(self, topic, msg):
         #print "pubsub.py PubSocket.send", self.port, topic, msg
-        self.socket.send("%s %s" % (topic, msg))   
+        self.socket.send_string("%s %s" % (topic, msg))   
 
 class Subscription():
     def __init__(self, hostname):
