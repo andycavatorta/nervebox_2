@@ -4,7 +4,7 @@ import traceback
 
 oNames = mido.get_output_names()
 
-midi_out = mido.open_output(oNames[1])
+midi_out = mido.open_output(oNames[0])
 
 
 # creating OSC endpoint methds
