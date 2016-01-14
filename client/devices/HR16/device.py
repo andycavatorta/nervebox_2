@@ -24,6 +24,7 @@ def sound_tom_2_off(params):
 def sound_tom_2_pitch(params):
     pass
 def sound_tom_3_bang(params):
+    print "sound_tom_3_bang", params
     midi_out.send(mido.Message('note_on', note=41, velocity=int(params["dynamics"]["amplitude"]*127)))
     pass
 def sound_tom_3_off(params):
@@ -156,7 +157,7 @@ def handleNOSC(nosc_d):
     print "handleNOSC",nosc_d
     #print 'nosc_d["innerpath"]', nosc_d["innerpath"]
     try:
-        pathToMethod_d[nosc_d["innerpath"]](nosc_d["params"])
+        pathToMethod_d[nosc_d["path"]](nosc_d["params"])
     except Exception as e:
         traceback.print_exc()
         print "device: path not found", e
