@@ -28,7 +28,7 @@ class PubSocket():
         self.socket = self.context.socket(zmq.PUB)
         self.socket.bind("tcp://*:%s" % port)
     def send(self, topic, msg):
-        print "pubsub.py PubSocket.send", self.port, topic, msg
+        #print "pubsub.py PubSocket.send", self.port, topic, msg
         self.socket.send("%s %s" % (topic, msg))   
 
 class Subscription():
@@ -90,7 +90,7 @@ class Subscriptions(threading.Thread):
     def run(self):
         while True:
             msg_str = self.socket.recv()
-            print "msg recieved", msg_str
+            #print "msg recieved", msg_str
             topic, msg = msg_str.split(' ', 1)
             if topic == "__heartbeat__":
                 self.recordHeartbeat(msg)
