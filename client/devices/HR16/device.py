@@ -153,7 +153,7 @@ def ping(params):
     pass
 
 def handleNOSC(nosc_d):
-    #print nosc_d
+    print "handleNOSC",nosc_d
     #print 'nosc_d["innerpath"]', nosc_d["innerpath"]
     try:
         pathToMethod_d[nosc_d["innerpath"]](nosc_d["params"])
