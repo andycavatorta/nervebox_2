@@ -1,11 +1,15 @@
 import commands
-import fcntl
+#import fcntl
 import json
+import netifaces
 import socket
 import struct
 import threading
 import time
 import zmq
+
+from sys import platform as _platform
+
 
 """
 def getLocalIP():
@@ -15,7 +19,6 @@ def getLocalIP():
         return wlan0
     else:
         return eth0
-"""
 
 def getLocalIP(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,6 +27,16 @@ def getLocalIP(ifname):
         0x8915,  # SIOCGIFADDR
         struct.pack('256s', ifname[:15])
     )[20:24])
+
+"""
+
+def getLocalIP():
+    if _platform == "darwin":
+        interfaceName = "en1"
+    else:
+        interfaceName = "eth0"
+    netifaces.ifaddresses(interfaceName)    
+    return netifaces.ifaddresses(interfaceName)[2][0]['addr']
 
 #####################
 ##### RESPONDER #####
@@ -74,7 +87,7 @@ def init_responder(listener_grp, listener_port, response_port, callback):
         listener_grp,
         listener_port, 
         response_port, 
-        getLocalIP('eth0'), 
+        getLocalIP(), 
         callback
     )
     responder.start()
@@ -132,7 +145,7 @@ def init_caller(mcast_grp, mcast_port, recv_port, callback):
     print "calling port" , mcast_port, "in multicast group", mcast_grp
     callerSend = CallerSend(
         socket.gethostname(), 
-        getLocalIP('eth0'), 
+        getLocalIP(), 
         mcast_grp, 
         mcast_port
     )
