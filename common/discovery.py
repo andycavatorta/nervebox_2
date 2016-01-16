@@ -1,4 +1,5 @@
 import commands
+import fcntl
 import json
 import socket
 import struct
@@ -6,6 +7,7 @@ import threading
 import time
 import zmq
 
+"""
 def getLocalIP():
     eth0 = commands.getstatusoutput("ip addr list eth0 |grep \"inet \" |cut -d' ' -f6|cut -d/ -f1")[1]
     wlan0 = commands.getstatusoutput("ip addr list wlan0 |grep \"inet \" |cut -d' ' -f6|cut -d/ -f1")[1]
@@ -13,6 +15,15 @@ def getLocalIP():
         return wlan0
     else:
         return eth0
+"""
+
+def getLocalIP(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
 
 #####################
 ##### RESPONDER #####
@@ -63,7 +74,7 @@ def init_responder(listener_grp, listener_port, response_port, callback):
         listener_grp,
         listener_port, 
         response_port, 
-        getLocalIP(), 
+        getLocalIP('eth0'), 
         callback
     )
     responder.start()
@@ -121,7 +132,7 @@ def init_caller(mcast_grp, mcast_port, recv_port, callback):
     print "calling port" , mcast_port, "in multicast group", mcast_grp
     callerSend = CallerSend(
         socket.gethostname(), 
-        getLocalIP(), 
+        getLocalIP('eth0'), 
         mcast_grp, 
         mcast_port
     )
