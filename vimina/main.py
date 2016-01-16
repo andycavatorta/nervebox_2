@@ -18,12 +18,14 @@ import rtmidi  #https://github.com/SpotlightKid/python-rtmidi
 import socket
 import sys
 
-OS = os.name
-BASE_PATH = "/home/stella/Dropbox/projects/current/nervebox_2/" if OS=="posix" else "C:/Users/andy/Dropbox/projects/current/nervebox_2/"
-COMMON_PATH = "%scommon/" % (BASE_PATH )
-DEVICES_PATH = "%sclient/devices/" % (BASE_PATH )
-#SERVER_PATH = "%sserver/" % (BASE_PATH )
 HOSTNAME = socket.gethostname()
+#OS = os.name
+#BASE_PATH = "/home/stella/Dropbox/projects/current/nervebox_2/" if OS=="posix" else "C:/Users/andy/Dropbox/projects/current/nervebox_2/"
+#filepath = os.path.dirname(os.path.realpath(__file__))
+BASE_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
+COMMON_PATH = "%s/common/" % (BASE_PATH )
+DEVICES_PATH = "%s/client/devices/" % (BASE_PATH )
+#SERVER_PATH = "%sserver/" % (BASE_PATH )
 
 sys.path.append(BASE_PATH)
 sys.path.append(COMMON_PATH)

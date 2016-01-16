@@ -19,13 +19,14 @@ import socket
 #import zmq
 
 # constants
-PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
+#PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
+#BASE_PATH = "/home/pi/nervebox_2/" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
 HOSTNAME = socket.gethostname()
-BASE_PATH = "/home/pi/nervebox_2/" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
-CLIENT_PATH = "%sclient/" % (BASE_PATH )
-DEVICES_PATH = "%sclient/devices/" % (BASE_PATH )
-COMMON_PATH = "%scommon/" % (BASE_PATH )
-HOST_SPECIFIC_PATH = "%sclient/devices/%s/" % (BASE_PATH, HOSTNAME)
+BASE_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
+CLIENT_PATH = "%s/client/" % (BASE_PATH )
+DEVICES_PATH = "%s/client/devices/" % (BASE_PATH )
+COMMON_PATH = "%s/common/" % (BASE_PATH )
+HOST_SPECIFIC_PATH = "%s/client/devices/%s/" % (BASE_PATH, HOSTNAME)
 
 
 # local paths

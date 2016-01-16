@@ -21,13 +21,15 @@ import sys
 import zmq
 
 
-PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
-BASE_PATH = "/home/pi/nervebox_2" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
-COMMON_PATH = "%scommon/" % (BASE_PATH )
-DEVICES_PATH = "%sclient/devices/" % (BASE_PATH )
+#PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
+#BASE_PATH = "/home/pi/nervebox_2" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
+
 HOSTNAME = socket.gethostname()
-SERVER_PATH = "%sserver/" % (BASE_PATH )
-STORE_PATH = "%sstore/" % SERVER_PATH
+BASE_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
+COMMON_PATH = "%s/common/" % (BASE_PATH )
+DEVICES_PATH = "%s/client/devices/" % (BASE_PATH )
+SERVER_PATH = "%s/server/" % (BASE_PATH )
+STORE_PATH = "%s/store/" % SERVER_PATH
 
 # local paths
 sys.path.append(BASE_PATH)
