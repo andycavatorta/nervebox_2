@@ -32,7 +32,7 @@ def getLocalIP(ifname):
 
 def getLocalIP():
     if _platform == "darwin":
-        interfaceName = "en1"
+        interfaceName = "en0"
     else:
         interfaceName = "eth0"
     netifaces.ifaddresses(interfaceName)    
