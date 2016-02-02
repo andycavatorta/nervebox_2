@@ -53,6 +53,8 @@ with open(COMMON_PATH + 'mappings.json', 'r') as f:
 
 MAPPING = MAPPINGS["MAPPINGS"]["default"] # todo: the mapping name will have to be dynamically updated
 
+#DEVICENAMES = filter(lambda x: os.path.isdir(os.path.join(DEVICES_PATH, x)), os.listdir(DEVICES_PATH))
+
 ######################
 ##### NETWORKING #####
 ######################
@@ -61,6 +63,10 @@ MAPPING = MAPPINGS["MAPPINGS"]["default"] # todo: the mapping name will have to 
 
 subscribernames = filter(lambda x: os.path.isdir(os.path.join(DEVICES_PATH, x)), os.listdir(DEVICES_PATH))
 subscribernames.append("nervebox2")
+subscribernames.append("admins-MacBook-Pro.local")
+
+
+
 
 def recvCallback(topic, msg):
   print "recvCallback", repr(topic), repr(msg)
@@ -117,6 +123,7 @@ midiDeviceManager.init(deviceCallback, midiCallback)
 #################################
 ##### MAP OSC IN TO OSC OUT #####
 #################################
+
 
 def mapOscInToOscOut(osc):
   print osc

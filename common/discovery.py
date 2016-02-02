@@ -57,16 +57,23 @@ class Responder(threading.Thread):
         self.IpTiming = {}
     def response(self, remoteIP, msg_json): # response sends the local IP to the remote device
         #print "Responder.response",remoteIP,self.response_port, msg_json
+        print "discovery Responder 1"
         if self.IpTiming.has_key(remoteIP):
             if self.IpTiming[remoteIP] + 6 > time.time():
                 return
         else:
             self.IpTiming[remoteIP] = time.time()
+        print "discovery Responder 2"
         context = zmq.Context()
+        print "discovery Responder 3"
         socket = context.socket(zmq.PAIR)
+        print "discovery Responder 4"
         socket.connect("tcp://%s:%s" % (remoteIP,self.response_port))
+        print "discovery Responder 5"
         socket.send(msg_json)
+        print "discovery Responder 6"
         socket.close()
+        print "discovery Responder 7"
     def run(self):
         while True:
             #try:
@@ -129,12 +136,17 @@ class CallerRecv(threading.Thread):
         print "CallerRecv listening on port %d" % (recv_port)
     def run(self):
         #print "CallerRecv run"
+        print "discovery CallerRecv 1"
         msg_json = self.listen_sock.recv()
         #print ">>>>>>>>>>", msg_json
+        print "discovery CallerRecv 2"
         msg_d = json.loads(msg_json)
+        print "discovery CallerRecv 3"
         self.callback(msg_d)
         # to do: test the connection
+        print "discovery CallerRecv 4"
         self.callerSend.setServerFound(True)
+        print "discovery CallerRecv 5"
 
 
 #####################
