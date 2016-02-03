@@ -161,7 +161,7 @@ ccMap = {
 
 def makePitch(midiNoteNumber, cents_int=0):
     pitch = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"][midiNoteNumber%12]
-    octave = int(math.floor(midiNoteNumber/12)-1)
+    octave = int(math.floor(midiNoteNumber/12)-2)
     
 
     return {

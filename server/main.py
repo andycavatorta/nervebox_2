@@ -68,8 +68,9 @@ subscribernames.append("admins-MacBook-Pro.local")
 
 
 
-def recvCallback(topic, msg):
-  print "recvCallback", repr(topic), repr(msg)
+def recvCallback(topic, osc_msg):
+  #print "recvCallback", repr(topic), repr(osc_msg)
+  mapOscInToOscOut(osc_msg)
 
 def netStateCallback(hostname, connected):
   print "netStateCallback", hostname, connected
