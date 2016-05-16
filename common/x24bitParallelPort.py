@@ -12,7 +12,7 @@ if PI_NATIVE:
 else:
     import RPi_stub.GPIO as GPIO
 
-INTRA_WORD_TIMING = 0.01 # SECONDS
+INTRA_WORD_TIMING = 0.1 # SECONDS
 TX_PINS = [2,3,14,4,15,18,17,27,23,24,10,9,25,11,8,7,5,6,12,13,16,19,20,26] # pin 22 is wired but not used
 DATA_READY_PIN = 21
 
