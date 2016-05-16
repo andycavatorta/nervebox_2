@@ -1,37 +1,17 @@
 """
-1 bit data ready
-5 bits 0-23 channels
-2 bits 0-4 commands
-16 bits - values
+1 ready bit
+23 data bits
 
-
-the job on the client side:
-
-create duplex parallel ports
-run test of i/o comms w/ Mojo
-
-# deliver local IP and hostname to server via multicast
-# listen for messages
-
-16 bits of freq
-8 bits of duty cycle
-6 bits of channel
+when data is received, 
+ready bit -> 0
+data bits are set
+ready bit -> 1
 
 """
 
-import time
 import threading
 import RPi.GPIO as GPIO
 
-"""
-Duplex Ports class handles communication with Mojo FPGA
-There are two ports, in and out.
-
-init() receives 
-setModuleMap() connects module names in the Pi to module numbers in the Mojo
-setCallback() sets callback function for incoming data
-send(moduleName,Value) places name/value pairs in the send queue
-"""
 
 TIMING = 0.1
 PINS_IN = [3,5,7,29,31,26,24,21,19,23,32,33]

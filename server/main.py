@@ -1,10 +1,5 @@
 """
-This module is the Server.
-It 
-1) listens for network discovery connections from clients and vimina
-2) 
-3) 
-4) 
+ 
 """
 
 #############################################
