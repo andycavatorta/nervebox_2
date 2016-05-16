@@ -46,8 +46,9 @@ def menuFunction(params):
     "D":menuDigital,
     "P":menuPulse,
     "V":menuValues
-  }
-  while True:
+  }  
+  goodValue = False
+  while goodValue == False:
     display("Select a function:\n")
     display("  S - Square Wave\n")
     display("  D - Digital (on/off)\n")
@@ -55,6 +56,7 @@ def menuFunction(params):
     input = sys.stdin.readline()
     try:
       fmap[input[:-1]](params)
+      goodValue = True
     except Exception as e:
       print "menuFunction: invalid value:", input
       print traceback.print_exc()
