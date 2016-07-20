@@ -1,10 +1,3 @@
-"""
-
-
-
-"""
-
-
 #############################################
 ##### MODULES, EVENIRONMENT AND GLOBALS #####
 #############################################
@@ -16,7 +9,6 @@ import time
 import threading
 import sys
 import socket
-#import zmq
 
 # constants
 #PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
@@ -27,7 +19,8 @@ CLIENT_PATH = "%s/client/" % (BASE_PATH )
 DEVICES_PATH = "%s/client/devices/" % (BASE_PATH )
 COMMON_PATH = "%s/common/" % (BASE_PATH )
 HOST_SPECIFIC_PATH = "%s/client/devices/%s/" % (BASE_PATH, HOSTNAME)
-
+clientnames = ("Joaos-MacBook-Pro-2.local")
+ROLE = "client" if HOSTNAME in clientnames else "server" 
 
 # local paths
 sys.path.append(BASE_PATH)
@@ -36,79 +29,20 @@ sys.path.append(CLIENT_PATH)
 sys.path.append(HOST_SPECIFIC_PATH)
 
 # import local modules
-import discovery
-import pubsub
+import dps
 import nerveOSC
-import device
+if ROLE == "client":
+    import device
+    device.init()
 
 # load config
 with open(COMMON_PATH + 'settings.json', 'r') as f:
     SETTINGS = json.load(f)
 
-device.init()
-
-
 ######################
 ##### NETWORKING #####
 ######################
 
-
 subscribernames = ["nervebox"]
 
-def recvCallback(topic, msg):
-    print "recvCallback", repr(topic), repr(msg)
-    device.handleNOSC(nerveOSC.parse(msg))
-
-def netStateCallback(hostname, connected):
-    print "netStateCallback", hostname, connected
-    callerSend.setServerFound(connected)
-
-def serverFoundCallback(msg):
-    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__", HOSTNAME))
-
-pubsub_api = pubsub.init(
-    subscribernames,
-    HOSTNAME, 
-    SETTINGS["pubsub_pubPort"], 
-    recvCallback,
-    netStateCallback
-)
-
-callerSend = discovery.init_caller(
-    SETTINGS["discovery_multicastGroup"], 
-    SETTINGS["discovery_multicastPort"],
-    SETTINGS["discovery_responsePort"],
-    serverFoundCallback
-)
-
-"""
-def duplexSockets_handleMessages(msg):
-    #print "------------", nerveOSC.parse(msg)
-    print "duplexPort_handleMessages", msg
-    device.handleNOSC(nerveOSC.parse(msg))
-
-def duplexSockets_handleOutgoingConfirmation(msg):
-    print "duplexPort_handleOutgoingConfirmation", msg
-
-def duplexSockets_handleException(msg):
-    print "duplexSockets_handleException", msg
-
-def discovery_handleServerFound(msg_d):
-    print "discovery_handleServerFound", msg_d
-    duplexSockets_send = duplexSockets.init(
-        msg_d["ip"], 
-        msg_d["server_port"], 
-        CONFIG["duplexSockets_devicePort"],
-        "/system/ping/",
-        duplexSockets_handleMessages, 
-        duplexSockets_handleOutgoingConfirmation,
-        duplexSockets_handleException
-    )
-
-discovery.init_caller(
-    CONFIG["discovery_multicastGroup"], 
-    CONFIG["discovery_multicastPort"],
-    CONFIG["discovery_responsePort"],
-    discovery_handleServerFound
-)
-"""
+dps.init_networking(subscribernames,HOSTNAME,SETTINGS,ROLE)
