@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import commands
 import json
 import netifaces
@@ -6,23 +7,26 @@ import struct
 import threading
 import time
 import zmq
-
+import yaml
 from sys import platform as _platform
 
 #####################
 ###### PUB SUB ######
 #####################
-
+subscribernames = None
 HEARTBEAT = 1.0 # seconds
+condition = threading.Condition()
 
 class PubSocket():
     def __init__(self, port):
         self.port = port
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUB)
+        self.socket.setsockopt(zmq.LINGER, 0)
         self.socket.bind("tcp://*:%s" % port)
     def send(self, topic, msg):
-        self.socket.send_string("%s %s" % (topic, msg))   
+        self.socket.send_string("%s %s" % (topic, msg))
+        time.sleep(1)   
 
 class Subscription():
     def __init__(self, hostname):
@@ -42,7 +46,7 @@ class Subscription():
             self.connected = False
             return False
         if not self.connected and hb: # recently connected
-            self.connected = True            
+            self.connected = True          
             return True
         return None
     def setConnected(self, ip=None, remotePort=None):
@@ -52,11 +56,13 @@ class Subscription():
 
 class Subscriptions(threading.Thread):
     """ this class manages a zmq sub socket and code for tracking publishers' connect state using heartbeats """
-    def __init__(self, hostnames, publish_port, recvCallback, netStateCallback):
+    def __init__(self, condition, hostnames, role, publish_port, recvCallback, netStateCallback):
         threading.Thread.__init__(self)
         # socket details
+        self.role = role
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
+        self.socket.setsockopt(zmq.LINGER, 0)
         self.recvCallback = recvCallback
         # subscription tracking details
         self.subscriptions = {}
@@ -69,20 +75,34 @@ class Subscriptions(threading.Thread):
         self.subscriptions[hostname] = Subscription(hostname)
     def connectSubscription(self, hostname, ip, port, topics_t):
         """ when a publisher's ip and hostname are discovered, we can connect a subscription to it """
-        self.socket.connect("tcp://%s:%s" % (ip, port))
+        if hostname not in self.subscriptions:
+            with condition:
+                self.subscriptions[hostname] = Subscription(hostname)
+                self.socket.connect("tcp://%s:%s" % (ip, port))
+                condition.notify_all()
+        else:
+            with condition:
+                self.socket.connect("tcp://%s:%s" % (ip, port))
+                condition.notify_all()
         for topic in topics_t:
-            self.socket.setsockopt(zmq.SUBSCRIBE, topic)
+            topic = topic.decode('ascii')
+            self.socket.setsockopt_string(zmq.SUBSCRIBE, topic)
         self.subscriptions[hostname].setConnected(ip, self.publish_port)
-        self.netStateCallback(hostname, True)
+        self.netStateCallback(hostname, True, self.role, port)
+
+
     def disconnectSubscription(self, hostname):
-        self.netStateCallback(hostname, False)
+        self.netStateCallback(hostname, False, self.role, self.publish_port)
     def getSubscriptions(self):
         return self.subscriptions
     def recordHeartbeat(self, hostname):
+        # print repr(self.subscriptions), hostname
+        print 'hearbeat %s' % (hostname)
         self.subscriptions[hostname].setHeartbeat()
     def run(self):
         while True:
             msg_str = self.socket.recv()
+            # print msg_str
             topic, msg = msg_str.split(' ', 1)
             if topic == "__heartbeat__":
                 self.recordHeartbeat(msg)
@@ -91,31 +111,37 @@ class Subscriptions(threading.Thread):
 
 class CheckHeartbeats(threading.Thread):
     """ this class manages a zmq sub socket and code for tracking publishers' connect state using heartbeats """
-    def __init__(self, subscriptions_instance):
+    def __init__(self, condition, subscriptions_instance, role, publish_port):
         threading.Thread.__init__(self)
         self.subscriptions_instance = subscriptions_instance
+        self.role = role
+        self.pubPort = publish_port
     def run(self):
+        with condition:
+            condition.wait()
         while True:
-            for hostname, subscriber in self.subscriptions_instance.getSubscriptions().iteritems():
+            subs = self.subscriptions_instance.getSubscriptions().iteritems()
+            for hostname, subscriber in subs:#self.subscriptions_instance.getSubscriptions().iteritems():
                 stat = subscriber.testConnection()
                 if stat == True:
-                    self.subscriptions_instance.netStateCallback(hostname, True)
+                    self.subscriptions_instance.netStateCallback(hostname, True, self.role, self.pubPort)
                 if stat == False:
-                    self.subscriptions_instance.netStateCallback(hostname, False)
-                time.sleep(HEARTBEAT)
+                    self.subscriptions_instance.netStateCallback(hostname, False, self.role, self.pubPort)
+            time.sleep(HEARTBEAT)
 
 def sendHeartbeats(pubsocket, heartbeatMsg):
     while True:
         pubsocket.send("__heartbeat__", heartbeatMsg)
         time.sleep(HEARTBEAT)
 
-def init(subscribersnames,localName, publish_port, recvCallback,netStateCallback):
+def init(subscribernames,localName, role, publish_port, recvCallback,netStateCallback):
     #pubsocket = PubSocket(publish_port, localName)
     #pubsocket.start()
+    print 'INITIALIZING PUBSUP'
     pubsocket = PubSocket(publish_port)
-    subscriptions = Subscriptions(subscribersnames, publish_port, recvCallback, netStateCallback)
+    subscriptions = Subscriptions(condition, subscribernames, role, publish_port, recvCallback, netStateCallback)
     subscriptions.start()
-    checkheartbeats = CheckHeartbeats(subscriptions)
+    checkheartbeats = CheckHeartbeats(condition, subscriptions, role, publish_port)
     checkheartbeats.start()
 
     t1 = threading.Thread(target=sendHeartbeats, args=(pubsocket, localName))
@@ -135,8 +161,8 @@ def getLocalIP():
     if _platform == "darwin":
         interfaceName = "en0"
     else:
-        interfaceName = "eth0"
-    netifaces.ifaddresses(interfaceName)    
+        interfaceName = "wlan0"
+    netifaces.ifaddresses(interfaceName)
     return netifaces.ifaddresses(interfaceName)[2][0]['addr']
 
 #####################
@@ -144,14 +170,16 @@ def getLocalIP():
 #####################
 
 class Responder(threading.Thread):
-    def __init__(self, listener_grp, listener_port, response_port, localIP, callback):
+    def __init__(self, pubPort, listener_grp, listener_port, response_port, localIP, callback):
         threading.Thread.__init__(self)
+        self.pubPort = pubPort
         self.listener_port = listener_port
         self.response_port = response_port
         self.localIP = localIP
         self.callback = callback
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         self.sock.bind((listener_grp, listener_port))
         self.mreq = struct.pack("4sl", socket.inet_aton(listener_grp), socket.INADDR_ANY)
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, self.mreq)
@@ -176,21 +204,22 @@ class Responder(threading.Thread):
         print "discovery Responder 7"
     def run(self):
         while True:
-            #try:
                 msg_json = self.sock.recv(1024)
                 msg_d = json.loads(msg_json)
                 print "Event: Device Discovered:",msg_json
                 remoteIP = msg_d["ip"]
-                resp_d = self.callback(msg_d)
-                resp_json = json.dumps( {"ip":self.localIP,"hostname":socket.gethostname()})
+                resp_d = self.callback(msg_d, self.pubPort)
+                resp_json = json.dumps( {"ip":self.localIP,"hostname":str(socket.gethostname())})
                 #print "resp_json=", resp_json
                 self.response(remoteIP,resp_json)
             #except Exception as e:
             #    print "Exception in dynamicDiscovery.server.Discovery: %s" % (repr(e))
 
-def init_responder(listener_grp, listener_port, response_port, callback):
+def init_responder(pubPort, listener_grp, listener_port, response_port, callback):
     print "listening for multicast on port" , listener_port, "in multicast group", listener_grp
+    global responder
     responder = Responder(
+        pubPort,
         listener_grp,
         listener_port, 
         response_port, 
@@ -198,7 +227,6 @@ def init_responder(listener_grp, listener_port, response_port, callback):
         callback
     )
     responder.start()
-
 
 ##################
 ##### CALLER #####
@@ -212,6 +240,7 @@ class CallerSend(threading.Thread):
         self.mcast_port = mcast_port
         self.mcast_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.mcast_sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)
+        self.mcast_sock.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         self.msg_d = {"ip":localIP,"hostname":localHostname}
         self.msg_json = json.dumps(self.msg_d)
         self.mcast_msg = self.msg_json
@@ -226,12 +255,16 @@ class CallerSend(threading.Thread):
             time.sleep(5)
 
 class CallerRecv(threading.Thread):
-    def __init__(self, recv_port, callback, callerSend):
+    def __init__(self, hostname, pubPort, recv_port, callback, callerSend, id_num):
         threading.Thread.__init__(self)
+        self.id_num = id_num
+        self.hostname = hostname
+        self.pubPort = pubPort
         self.callback = callback
         self.callerSend = callerSend
         self.listen_context = zmq.Context()
         self.listen_sock = self.listen_context.socket(zmq.PAIR)
+        self.listen_sock.setsockopt(zmq.LINGER, 0)
         self.listen_sock.bind("tcp://*:%d" % recv_port)
         print "CallerRecv listening on port %d" % (recv_port)
     def run(self):
@@ -240,71 +273,86 @@ class CallerRecv(threading.Thread):
         msg_json = self.listen_sock.recv()
         #print ">>>>>>>>>>", msg_json
         print "discovery CallerRecv 2"
-        msg_d = json.loads(msg_json)
+        msg_d = yaml.safe_load(msg_json)
+        print ">>>>>>>>>>>>>> %s" % (msg_d)
         print "discovery CallerRecv 3"
-        self.callback(msg_d)
+        self.callback(msg_d,self.pubPort,msg_d['hostname'],self.id_num)
         # to do: test the connection
         print "discovery CallerRecv 4"
         self.callerSend.setServerFound(True)
         print "discovery CallerRecv 5"
 
-def init_caller(mcast_grp, mcast_port, recv_port, callback):
+def init_caller(hostname, pubPort, mcast_grp, mcast_port, recv_port, callback, id_num):
     print "calling port" , mcast_port, "in multicast group", mcast_grp
-    callerSend = CallerSend(
-        socket.gethostname(), 
-        getLocalIP(), 
-        mcast_grp, 
-        mcast_port
-    )
-    callerRecv = CallerRecv(
-        recv_port, 
-        callback, 
-        callerSend
-    )
-    callerRecv.start()
-    callerSend.start()
-    return callerSend
+    if id_num == 0:
+        global callerSend
+        callerSend = CallerSend(socket.gethostname(), getLocalIP(), mcast_grp, mcast_port)
+        callerRecv = CallerRecv(hostname, pubPort, recv_port, callback, callerSend, 0)
+        callerRecv.start()
+        callerSend.start()
+        return callerSend
+    else:
+        global callerSend2
+        callerSend2 = CallerSend(socket.gethostname(), getLocalIP(), mcast_grp, mcast_port)
+        callerRecv2 = CallerRecv(hostname, pubPort, recv_port, callback, callerSend2, 1)
+        callerRecv2.start()
+        callerSend2.start()
+        return callerSend2
 
 #####################
 #### GLOBAL INIT ####
 #####################
+pubsub_api = None
+pubsub_api2 = None
+callerSend = None
+callerSend2 = None
+responder = None
+
+def init_networking(subscribernames, hostname, role, pubPort, pubPort2, mcastGroup, mcastPort, mcastPort2, rspnsPort, rspnsPort2):
+    print role
+    global pubsub_api
+
+    if role == "dashboard":
+        pubsub_api = init(subscribernames, hostname, role, pubPort2, recvCallback, netStateCallback)
+    else:
+        pubsub_api = init(subscribernames, hostname, role, pubPort, recvCallback,netStateCallback)
+
+    if role == "client":
+        global pubsub_api2
+        pubsub_api2 = init(subscribernames, hostname, role, pubPort2, recvCallback, netStateCallback)
+
+        global callerSend
+        callerSend = init_caller(hostname, pubPort, mcastGroup, mcastPort, rspnsPort, serverFoundCallback, 0)
+
+        global callerSend2
+        callerSend2 = init_caller(hostname, pubPort2, mcastGroup, mcastPort2, rspnsPort2, serverFoundCallback, 1)
+    else:
+        if role == "dashboard":
+            rspnsPort = rspnsPort2
+            mcastPort = mcastPort2
+            pubPort = pubPort2
+        global responder
+        responder = init_responder(pubPort, mcastGroup, mcastPort, rspnsPort, handleSubscriberFound)
 
 def recvCallback(topic, msg):
     print "recvCallback", repr(topic), repr(msg)
     if ROLE == "client":
         device.handleNOSC(nerveOSC.parse(msg))
 
-def netStateCallback(hostname, connected):
-    print "netStateCallback", hostname, connected
-    callerSend.setServerFound(connected)
-
-def serverFoundCallback(msg):
-    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__", HOSTNAME))
-
-def handleSubscriberFound(msg):
-    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__", "osc"))
-
-def init_networking(subscribernames,hostname,settings,role):
-
-    pubsub_api = init(
-        subscribernames,
-        hostname, 
-        settings["pubsub_pubPort"], 
-        recvCallback,
-        netStateCallback
-    )
+def netStateCallback(hostname, connected, role, pubPort):
+    print "netStateCallback", hostname, connected, pubPort
     if role == "client":
-        callerSend = init_caller(
-            settings["discovery_multicastGroup"], 
-            settings["discovery_multicastPort"],
-            settings["discovery_responsePort"],
-            serverFoundCallback
-        )
+        if pubPort == 10002:
+            callerSend.setServerFound(connected)
+        else:
+            callerSend2.setServerFound(connected)
+
+def serverFoundCallback(msg,pubPort,hostname, id_num):
+    if id_num == 0:
+        pubsub_api["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", hostname))
     else:
-        callerSend = init_responder(
-            settings["discovery_multicastGroup"], 
-            settings["discovery_multicastPort"],
-            settings["discovery_responsePort"],
-            handleSubscriberFound
-        )
+        pubsub_api2["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", hostname))
+
+def handleSubscriberFound(msg, pubPort):
+    pubsub_api["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", "osc"))
 
