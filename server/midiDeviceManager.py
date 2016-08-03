@@ -12,7 +12,7 @@ events:
 
 """
 import commands
-import inotify.adapters
+# import inotify.adapters
 import threading
 import time
 from operator import itemgetter
@@ -24,8 +24,8 @@ class DeviceTracker(threading.Thread):
         self.midiCallback = midiCallback
         self.homeDir = '/dev/snd'
         self.devices_d = {}
-        self.i = inotify.adapters.Inotify()
-        self.i.add_watch(self.homeDir)
+        # self.i = inotify.adapters.Inotify()
+        # self.i.add_watch(self.homeDir)
         self.listMidiDevices()
 
     def compareTimestamps(self,a,b):
@@ -84,31 +84,32 @@ class DeviceTracker(threading.Thread):
         del self.devices_d[deviceId]
 
     def run(self):
-        try:
-            for event in self.i.event_gen():
-                if event is not None:
-                    (header, type_names, watch_path, filename) = event
-                    if filename[0:4] != "midi":
-                        continue
-                    if type_names[0] == 'IN_CREATE':
-                        resp = commands.getstatusoutput("ls --full-time /dev/snd/%s" % (filename))
-                        timestamp1 = resp[1].split(" ")[7]
-                        time.sleep(1)
-                        byid = commands.getstatusoutput("ls --full-time /dev/snd/by-id/")
-                        byid_lines =  byid[1].split("\n")
-                        timesxNames = []
-                        for line in byid_lines:
-                            tokens = line.split(" ")
-                            if len(tokens) >= 7:
-                                timestamp2 = tokens[6]
-                                timesxNames.append((self.compareTimestamps(timestamp2,timestamp1), tokens[8]))
-                        timesxNames = sorted(timesxNames, key=itemgetter(0))
-                        if timesxNames[0][0] < 1:
-                            self.addDevice(filename,timesxNames[0][1][4:-3])
-                    if type_names[0] == 'IN_DELETE':
-                        self.removeDevice(filename)
-        finally:
-            self.i.remove_watch('/dev/snd')
+         pass
+        # try:
+        #     for event in self.i.event_gen():
+        #         if event is not None:
+        #             (header, type_names, watch_path, filename) = event
+        #             if filename[0:4] != "midi":
+        #                 continue
+        #             if type_names[0] == 'IN_CREATE':
+        #                 resp = commands.getstatusoutput("ls --full-time /dev/snd/%s" % (filename))
+        #                 timestamp1 = resp[1].split(" ")[7]
+        #                 time.sleep(1)
+        #                 byid = commands.getstatusoutput("ls --full-time /dev/snd/by-id/")
+        #                 byid_lines =  byid[1].split("\n")
+        #                 timesxNames = []
+        #                 for line in byid_lines:
+        #                     tokens = line.split(" ")
+        #                     if len(tokens) >= 7:
+        #                         timestamp2 = tokens[6]
+        #                         timesxNames.append((self.compareTimestamps(timestamp2,timestamp1), tokens[8]))
+        #                 timesxNames = sorted(timesxNames, key=itemgetter(0))
+        #                 if timesxNames[0][0] < 1:
+        #                     self.addDevice(filename,timesxNames[0][1][4:-3])
+        #             if type_names[0] == 'IN_DELETE':
+        #                 self.removeDevice(filename)
+        # finally:
+        #     self.i.remove_watch('/dev/snd')
 
 class Device(threading.Thread):
     def __init__(self, path, deviceId, deviceName, callback):

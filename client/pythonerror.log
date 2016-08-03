@@ -1,0 +1,14 @@
+2016-08-03 15:25:47,577 - Python Error Log - Thread:140735131807744 - Process:14533 - ERROR:
+Traceback (most recent call last):
+  File "main.py", line 102, in <module>
+    device
+  File "/Users/joaopedro/Desktop/nervebox-cleanup/common/dps.py", line 393, in init_networking
+    time.sleep(0.1)
+KeyboardInterrupt
+2016-08-03 15:52:20,947 - Python Error Log - Thread:140735131807744 - Process:15460 - ERROR:
+Traceback (most recent call last):
+  File "main.py", line 101, in <module>
+    device
+  File "/Users/joaopedro/Desktop/nervebox-cleanup/common/dps.py", line 393, in init_networking
+    time.sleep(0.1)
+KeyboardInterrupt

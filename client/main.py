@@ -11,7 +11,6 @@ import sys
 import socket
 import errorlog as elog
 
-
 # constants
 #PI_NATIVE = os.uname()[4].startswith("arm") # TRUE if running on RPi
 #BASE_PATH = "/home/pi/nervebox_2/" if PI_NATIVE else "/home/stella/Dropbox/projects/current/nervebox_2/" 
@@ -23,12 +22,17 @@ COMMON_PATH = "%s/common/" % (BASE_PATH )
 HOST_SPECIFIC_PATH = "%s/client/devices/%s/" % (BASE_PATH, HOSTNAME)
 SERVER_PATH = "%s/server/" % (BASE_PATH )
 STORE_PATH = "%s/store/" % SERVER_PATH
-clientnames = ("blueberrypie")
-ROLE = "client" if HOSTNAME in clientnames else "server"
-response = raw_input("Dashboard (yes/no)?")
-if response == 'yes':
-    ROLE = 'dashboard'
-print ROLE
+clientnames = ("blueberrypie","blackberrypie")
+ROLE = sys.argv[1]
+possible_responses = ["client", "server", "dashboard"]
+while ROLE not in possible_responses:
+    ROLE = raw_input('Please type dashboard, client or server: ')
+if ROLE == "server":
+    HOSTNAME = "**SERVER**"
+if ROLE == "dashboard":
+    HOSTNAME = "**DASHBOARD**"
+print 'role: ', ROLE
+print 'paths loaded'
 
 # local paths
 sys.path.append(BASE_PATH)
@@ -37,12 +41,16 @@ sys.path.append(CLIENT_PATH)
 sys.path.append(SERVER_PATH)
 sys.path.append(HOST_SPECIFIC_PATH)
 
+print "path append ok"
+
+device = None
+
 try:
     # import local modules
     import dps
     import nerveOSC
     if ROLE == "client":
-        import device
+        device = __import__('device')
         device.init()
     else:
         import parseOsc
@@ -50,12 +58,16 @@ try:
         import midiDeviceManager
         import midiserver
 
+    print "import local modules ok"
+
     # load config
     with open(COMMON_PATH + 'settings.json', 'r') as f:
         SETTINGS = json.load(f)
 
     with open(COMMON_PATH + 'mappings.json', 'r') as f:
         MAPPINGS = json.load(f)
+
+    print "load config ok"
 
     MAPPING = MAPPINGS["MAPPINGS"]["default"] # todo: the mapping name will have to be dynamically updated
 
@@ -70,6 +82,11 @@ try:
         subscribernames.append("nervebox2")
         subscribernames.append(HOSTNAME)
 
+    print "subscribernames ok"
+    print "initializing network..."
+
+    if ROLE == 'server': import vimina
+
     dps.init_networking(
         subscribernames,
         HOSTNAME,
@@ -80,7 +97,9 @@ try:
         SETTINGS["discovery_multicastPort"],
         SETTINGS["discovery_multicastPort2"],
         SETTINGS["discovery_responsePort"],
-        SETTINGS["discovery_responsePort2"]
+        SETTINGS["discovery_responsePort2"],
+        device
     )
+
 except:
     elog.elog.logerror()

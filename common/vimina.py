@@ -18,60 +18,13 @@ import rtmidi  #https://github.com/SpotlightKid/python-rtmidi
 import socket
 import sys
 
-HOSTNAME = socket.gethostname()
-#OS = os.name
-#BASE_PATH = "/home/stella/Dropbox/projects/current/nervebox_2/" if OS=="posix" else "C:/Users/andy/Dropbox/projects/current/nervebox_2/"
-#filepath = os.path.dirname(os.path.realpath(__file__))
 BASE_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
-COMMON_PATH = "%s/common/" % (BASE_PATH )
+CLIENT_PATH = "%s/client/" % (BASE_PATH )
 DEVICES_PATH = "%s/client/devices/" % (BASE_PATH )
-#SERVER_PATH = "%sserver/" % (BASE_PATH )
+print "vimina ok"
 
-sys.path.append(BASE_PATH)
-sys.path.append(COMMON_PATH)
-#sys.path.append(SERVER_PATH)
-
-
-# modules from COMMON_PATH
-import discovery
-import pubsub
 import midiToOsc
-
-with open(COMMON_PATH + 'settings.json', 'r') as f:
-    SETTINGS = json.load(f)
-
-######################
-##### NETWORKING #####
-######################
-
-subscribernames = ["nervebox"]
-
-def recvCallback(topic, msg):
-    # there is not yet a reason for nervebox to publish to vimina
-    print "recvCallback", repr(topic), repr(msg)
-
-def netStateCallback(hostname, connected):
-    print "netStateCallback", hostname, connected
-    callerSend.setServerFound(connected)
-
-def serverFoundCallback(msg):
-    pubsub_api["subscribe"](msg["hostname"],msg["ip"],SETTINGS["pubsub_pubPort"], ("__heartbeat__","osc"))
-
-pubsub_api = pubsub.init(
-    subscribernames,
-    HOSTNAME, 
-    SETTINGS["pubsub_pubPort"], 
-    recvCallback,
-    netStateCallback
-)
-
-callerSend = discovery.init_caller(
-    SETTINGS["discovery_multicastGroup"], 
-    SETTINGS["discovery_multicastPort"],
-    SETTINGS["discovery_responsePort"],
-    serverFoundCallback
-)
-
+import dps
 ###############################
 ##### VITUAL MIDI DEVICES #####
 ###############################
@@ -126,7 +79,7 @@ def midiEventCallback(devicename, msgAndTime_t, data=None):
 
     osc_msg = midiToOsc.convert(devicename, status, channel, data1, data2) # convert MIDI so OSC
     print osc_msg
-    pubsub_api["publish"]("osc", osc_msg)
+    dps.pubsub_api["publish"](devicename, osc_msg)
 
 # following MIDI functions should be moved into common module
 def createVirtualPort(devicename):

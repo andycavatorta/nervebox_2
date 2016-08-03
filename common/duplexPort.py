@@ -21,7 +21,7 @@ run test of i/o comms w/ Mojo
 
 import time
 import threading
-import RPi.GPIO as GPIO
+import RPi_stub.GPIO as GPIO
 
 """
 Duplex Ports class handles communication with Mojo FPGA

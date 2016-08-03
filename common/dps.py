@@ -8,14 +8,26 @@ import threading
 import time
 import zmq
 import yaml
+import os
+import sys
 from sys import platform as _platform
-
+HOSTNAME = socket.gethostname()
+BASE_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
+CLIENT_PATH = "%s/client/" % (BASE_PATH )
+DEVICES_PATH = "%s/client/devices/" % (BASE_PATH )
+COMMON_PATH = "%s/common/" % (BASE_PATH )
+HOST_SPECIFIC_PATH = "%s/client/devices/%s/" % (BASE_PATH, HOSTNAME)
+import nerveOSC
 #####################
 ###### PUB SUB ######
 #####################
 subscribernames = None
-HEARTBEAT = 1.0 # seconds
+HEARTBEAT = 2.0 # seconds
 condition = threading.Condition()
+pubsocket = None
+subs_instance = None
+device = None
+
 
 class PubSocket():
     def __init__(self, port):
@@ -73,7 +85,7 @@ class Subscriptions(threading.Thread):
     def addSubscription(self, hostname):
         """ nominally registers a new subscription, does not connect a socket for them b/c it may not be connected at init """
         self.subscriptions[hostname] = Subscription(hostname)
-    def connectSubscription(self, hostname, ip, port, topics_t):
+    def connectSubscription(self, hostname, ip, port, topics_t, topic_osc=None, topics_v=None):
         """ when a publisher's ip and hostname are discovered, we can connect a subscription to it """
         if hostname not in self.subscriptions:
             with condition:
@@ -87,27 +99,38 @@ class Subscriptions(threading.Thread):
         for topic in topics_t:
             topic = topic.decode('ascii')
             self.socket.setsockopt_string(zmq.SUBSCRIBE, topic)
+        if topics_v != None:
+            topics_v = topics_v.decode('ascii')
+            self.socket.setsockopt_string(zmq.SUBSCRIBE, topics_v)
+        if topic_osc != None:
+            topic_osc = topic_osc.decode('ascii')
+            self.socket.setsockopt_string(zmq.SUBSCRIBE, topic_osc)
         self.subscriptions[hostname].setConnected(ip, self.publish_port)
         self.netStateCallback(hostname, True, self.role, port)
 
 
     def disconnectSubscription(self, hostname):
         self.netStateCallback(hostname, False, self.role, self.publish_port)
+    def printSubscriptions(self):
+        pubsocket.send("DASHBOARD", self.subscriptions)
     def getSubscriptions(self):
         return self.subscriptions
     def recordHeartbeat(self, hostname):
         # print repr(self.subscriptions), hostname
-        print 'hearbeat %s' % (hostname)
+        print 'hearbeat',(hostname)
         self.subscriptions[hostname].setHeartbeat()
     def run(self):
         while True:
             msg_str = self.socket.recv()
-            # print msg_str
+            #print msg_str
             topic, msg = msg_str.split(' ', 1)
             if topic == "__heartbeat__":
                 self.recordHeartbeat(msg)
+            elif topic == "DASHBOARD":
+                print topic, msg
             else:
                 self.recvCallback(topic, msg)
+            
 
 class CheckHeartbeats(threading.Thread):
     """ this class manages a zmq sub socket and code for tracking publishers' connect state using heartbeats """
@@ -121,36 +144,56 @@ class CheckHeartbeats(threading.Thread):
             condition.wait()
         while True:
             subs = self.subscriptions_instance.getSubscriptions().iteritems()
+            if self.pubPort == 10002:
+                global subs_instance
+                subs_instance = self.subscriptions_instance
             for hostname, subscriber in subs:#self.subscriptions_instance.getSubscriptions().iteritems():
                 stat = subscriber.testConnection()
                 if stat == True:
                     self.subscriptions_instance.netStateCallback(hostname, True, self.role, self.pubPort)
+                    if self.pubPort == 10002:
+                        pubsocket.send("DASHBOARD", "server connected")
+                    else:
+                        pubsocket.send("DASHBOARD", "dashboard connected")
+                        if ROLE == 'client':
+                            if subs_instance != None:
+                                subs_instance.printSubscriptions()
+                    
                 if stat == False:
                     self.subscriptions_instance.netStateCallback(hostname, False, self.role, self.pubPort)
+                    if self.pubPort == 10002:
+                        pubsocket.send("DASHBOARD", "server disconnected")
             time.sleep(HEARTBEAT)
 
 def sendHeartbeats(pubsocket, heartbeatMsg):
     while True:
         pubsocket.send("__heartbeat__", heartbeatMsg)
-        time.sleep(HEARTBEAT)
+        # pubsocket.send("DASHBOARD", heartbeatMsg)
+        time.sleep(HEARTBEAT/2)
 
 def init(subscribernames,localName, role, publish_port, recvCallback,netStateCallback):
     #pubsocket = PubSocket(publish_port, localName)
     #pubsocket.start()
-    print 'INITIALIZING PUBSUP'
+    print 'starting pubsub...'
+    global pubsocket
     pubsocket = PubSocket(publish_port)
     subscriptions = Subscriptions(condition, subscribernames, role, publish_port, recvCallback, netStateCallback)
+    subscriptions.daemon = True
     subscriptions.start()
     checkheartbeats = CheckHeartbeats(condition, subscriptions, role, publish_port)
+    checkheartbeats.daemon = True
     checkheartbeats.start()
 
+
     t1 = threading.Thread(target=sendHeartbeats, args=(pubsocket, localName))
+    t1.daemon = True
     t1.start()
 
     return {
         "publish":pubsocket.send, # topic, msg
         "subscribe":subscriptions.connectSubscription, # hostname, ip, port, topics_t
-        "getSubscriptions":subscriptions.getSubscriptions
+        "getSubscriptions":subscriptions.getSubscriptions,
+        "printSubscriptions":subscriptions.printSubscriptions
     }
 
 #####################
@@ -209,7 +252,12 @@ class Responder(threading.Thread):
                 print "Event: Device Discovered:",msg_json
                 remoteIP = msg_d["ip"]
                 resp_d = self.callback(msg_d, self.pubPort)
-                resp_json = json.dumps( {"ip":self.localIP,"hostname":str(socket.gethostname())})
+                if ROLE == "server":
+                    resp_json = json.dumps( {"ip":self.localIP,"hostname":"**SERVER**"})
+                elif ROLE == "dashboard":
+                    resp_json = json.dumps( {"ip":self.localIP,"hostname":"**DASHBOARD**"})
+                else:
+                    resp_json = json.dumps( {"ip":self.localIP,"hostname":socket.gethostname()})
                 #print "resp_json=", resp_json
                 self.response(remoteIP,resp_json)
             #except Exception as e:
@@ -226,6 +274,7 @@ def init_responder(pubPort, listener_grp, listener_port, response_port, callback
         getLocalIP(), 
         callback
     )
+    responder.daemon = True
     responder.start()
 
 ##################
@@ -281,6 +330,10 @@ class CallerRecv(threading.Thread):
         print "discovery CallerRecv 4"
         self.callerSend.setServerFound(True)
         print "discovery CallerRecv 5"
+        if self.pubPort == 10002:
+            pubsocket.send("DASHBOARD", "server connected")
+        else:
+            pubsocket.send("DASHBOARD", "dashboard connected")
 
 def init_caller(hostname, pubPort, mcast_grp, mcast_port, recv_port, callback, id_num):
     print "calling port" , mcast_port, "in multicast group", mcast_grp
@@ -288,29 +341,29 @@ def init_caller(hostname, pubPort, mcast_grp, mcast_port, recv_port, callback, i
         global callerSend
         callerSend = CallerSend(socket.gethostname(), getLocalIP(), mcast_grp, mcast_port)
         callerRecv = CallerRecv(hostname, pubPort, recv_port, callback, callerSend, 0)
+        callerRecv.daemon = True
         callerRecv.start()
+        callerSend.daemon = True
         callerSend.start()
         return callerSend
     else:
         global callerSend2
         callerSend2 = CallerSend(socket.gethostname(), getLocalIP(), mcast_grp, mcast_port)
         callerRecv2 = CallerRecv(hostname, pubPort, recv_port, callback, callerSend2, 1)
+        callerRecv2.daemon = True
         callerRecv2.start()
+        callerSend2.daemon = True
         callerSend2.start()
         return callerSend2
 
 #####################
 #### GLOBAL INIT ####
 #####################
-pubsub_api = None
-pubsub_api2 = None
-callerSend = None
-callerSend2 = None
-responder = None
 
-def init_networking(subscribernames, hostname, role, pubPort, pubPort2, mcastGroup, mcastPort, mcastPort2, rspnsPort, rspnsPort2):
-    print role
+def init_networking(subscribernames, hostname, role, pubPort, pubPort2, mcastGroup, mcastPort, mcastPort2, rspnsPort, rspnsPort2, dvc=None):
     global pubsub_api
+    global ROLE
+    ROLE = role
 
     if role == "dashboard":
         pubsub_api = init(subscribernames, hostname, role, pubPort2, recvCallback, netStateCallback)
@@ -318,6 +371,8 @@ def init_networking(subscribernames, hostname, role, pubPort, pubPort2, mcastGro
         pubsub_api = init(subscribernames, hostname, role, pubPort, recvCallback,netStateCallback)
 
     if role == "client":
+        global device
+        device = dvc
         global pubsub_api2
         pubsub_api2 = init(subscribernames, hostname, role, pubPort2, recvCallback, netStateCallback)
 
@@ -334,6 +389,10 @@ def init_networking(subscribernames, hostname, role, pubPort, pubPort2, mcastGro
         global responder
         responder = init_responder(pubPort, mcastGroup, mcastPort, rspnsPort, handleSubscriberFound)
 
+    while threading.active_count() > 0:
+        time.sleep(0.1)
+
+
 def recvCallback(topic, msg):
     print "recvCallback", repr(topic), repr(msg)
     if ROLE == "client":
@@ -349,10 +408,17 @@ def netStateCallback(hostname, connected, role, pubPort):
 
 def serverFoundCallback(msg,pubPort,hostname, id_num):
     if id_num == 0:
-        pubsub_api["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", hostname))
+        pubsub_api["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", hostname),socket.gethostname())
     else:
-        pubsub_api2["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", hostname))
+        pubsub_api2["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", hostname), None, "DASHBOARD")
 
 def handleSubscriberFound(msg, pubPort):
-    pubsub_api["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__", "osc"))
+    print "@@@@@@@@@@@@@@@@@@",pubPort
+    if pubPort == 10002:
+        print '>>>>>>>>>>>>>>>>>> SERVER'
+        pubsub_api["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__"))
+    else:
+        print '>>>>>>>>>>>>>>>>>> DASHBOARD'
+        pubsub_api["subscribe"](msg["hostname"],msg["ip"],pubPort, ("__heartbeat__"), None, "DASHBOARD")
+
 

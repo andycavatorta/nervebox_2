@@ -1,8 +1,11 @@
 {
-	"discovery_multicastGroup": "224.0.0.1",
+	"discovery_multicastGroup": "224.3.29.71",
 	"discovery_multicastPort": 10000,
+	"discovery_multicastPort2": 10005,
 	"discovery_responsePort": 10001,
+	"discovery_responsePort2": 10003,
 	"pubsub_pubPort": 10002,
+	"pubsub_pubPort2": 10004,
 	"duplexSockets_devicePort": 50000,
 	"duplexSockets_serverPort": 50000,
 	"hardwareGatewayNetworkManager_clientPort": 50000,
